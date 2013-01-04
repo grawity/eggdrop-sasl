@@ -1,15 +1,15 @@
-Index: mod/server.mod/servmsg.c
+Index: src/mod/server.mod/servmsg.c
 ===================================================================
 RCS file: /usr/local/cvsroot/eggdrop1.8/src/mod/server.mod/servmsg.c,v
 retrieving revision 1.6
 diff -u -r1.6 servmsg.c
---- mod/server.mod/servmsg.c	15 Jun 2012 00:04:59 -0000	1.6
-+++ mod/server.mod/servmsg.c	3 Jan 2013 20:59:07 -0000
-@@ -1331,6 +1331,7 @@
-     return;
-   }
- #endif
+--- src/mod/server.mod/servmsg.c	15 Jun 2012 00:04:59 -0000	1.6
++++ src/mod/server.mod/servmsg.c	4 Jan 2013 19:17:15 -0000
+@@ -1338,6 +1338,7 @@
+   strcpy(botname, origbotname);
+   /* Start alternate nicks from the beginning */
+   altnick_char = 0;
 +  check_tcl_event("preinit-server");
-   /* Queue standard login */
-   dcc[servidx].timeval = now;
-   SERVER_SOCKET.timeout_val = &server_timeout;
+   if (pass[0])
+     dprintf(DP_MODE, "PASS %s\n", pass);
+   dprintf(DP_MODE, "NICK %s\n", botname);

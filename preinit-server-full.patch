@@ -1,10 +1,10 @@
-Index: mod/server.mod/server.c
+Index: src/mod/server.mod/server.c
 ===================================================================
 RCS file: /usr/local/cvsroot/eggdrop1.8/src/mod/server.mod/server.c,v
 retrieving revision 1.8
 diff -u -r1.8 server.c
---- mod/server.mod/server.c	25 Oct 2011 16:47:20 -0000	1.8
-+++ mod/server.mod/server.c	3 Jan 2013 20:59:06 -0000
+--- src/mod/server.mod/server.c	25 Oct 2011 16:47:20 -0000	1.8
++++ src/mod/server.mod/server.c	4 Jan 2013 19:17:14 -0000
 @@ -46,6 +46,8 @@
  static int flud_time;           /* msg flood time */
  static int flud_ctcp_thr;       /* ctcp flood threshold */
@@ -22,30 +22,30 @@ diff -u -r1.8 server.c
    {"connect-server",      connectserver,  120,               0},
    {"stackable-commands",  stackablecmds,  510,               0},
    {"stackable2-commands", stackable2cmds, 510,               0},
-Index: mod/server.mod/servmsg.c
+Index: src/mod/server.mod/servmsg.c
 ===================================================================
 RCS file: /usr/local/cvsroot/eggdrop1.8/src/mod/server.mod/servmsg.c,v
 retrieving revision 1.6
 diff -u -r1.6 servmsg.c
---- mod/server.mod/servmsg.c	15 Jun 2012 00:04:59 -0000	1.6
-+++ mod/server.mod/servmsg.c	3 Jan 2013 20:59:07 -0000
-@@ -1331,6 +1331,9 @@
-     return;
-   }
- #endif
+--- src/mod/server.mod/servmsg.c	15 Jun 2012 00:04:59 -0000	1.6
++++ src/mod/server.mod/servmsg.c	4 Jan 2013 19:17:15 -0000
+@@ -1338,6 +1338,9 @@
+   strcpy(botname, origbotname);
+   /* Start alternate nicks from the beginning */
+   altnick_char = 0;
 +  if (preinitserver[0])
 +    do_tcl("preinit-server", preinitserver); /* Call Tcl preinit-server */
 +  check_tcl_event("preinit-server");
-   /* Queue standard login */
-   dcc[servidx].timeval = now;
-   SERVER_SOCKET.timeout_val = &server_timeout;
-Index: mod/server.mod/help/set/server.help
+   if (pass[0])
+     dprintf(DP_MODE, "PASS %s\n", pass);
+   dprintf(DP_MODE, "NICK %s\n", botname);
+Index: src/mod/server.mod/help/set/server.help
 ===================================================================
 RCS file: /usr/local/cvsroot/eggdrop1.8/src/mod/server.mod/help/set/server.help,v
 retrieving revision 1.4
 diff -u -r1.4 server.help
---- mod/server.mod/help/set/server.help	1 Nov 2010 22:38:34 -0000	1.4
-+++ mod/server.mod/help/set/server.help	3 Jan 2013 20:59:08 -0000
+--- src/mod/server.mod/help/set/server.help	1 Nov 2010 22:38:34 -0000	1.4
++++ src/mod/server.mod/help/set/server.help	4 Jan 2013 19:17:15 -0000
 @@ -20,6 +20,12 @@
     specifies text to send to the server when first connecting
     there.  this is usually used to set the bot's mode to +i
