@@ -32,18 +32,18 @@ proc rparse {text} {
 }
 
 if {![catch {package require Tcl 8.6}]} {
-	proc b64:encode {bin} {
-		binary encode base64 $bin
+	proc b64:encode {input} {
+		binary encode base64 $input
 	}
-	proc b64:decode {str} {
-		binary decode base64 $str
+	proc b64:decode {input} {
+		binary decode base64 $input
 	}
 } elseif {![catch {package require base64}]} {
-	proc b64:encode {bin} {
-		::base64::encode -wrapchar "" $bin
+	proc b64:encode {input} {
+		::base64::encode -wrapchar "" $input
 	}
-	proc b64:decode {bin} {
-		::base64::decode $bin
+	proc b64:decode {input} {
+		::base64::decode $input
 	}
 } else {
 	set b64map {A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
