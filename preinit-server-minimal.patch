@@ -1,3 +1,5 @@
+Adds a "preinit-server" Tcl event for use with `bind EVNT`.
+
 Index: src/mod/server.mod/servmsg.c
 ===================================================================
 RCS file: /usr/local/cvsroot/eggdrop1.8/src/mod/server.mod/servmsg.c,v
