@@ -31,6 +31,24 @@ proc rparse {text} {
 	return $vec
 }
 
+if {![catch {package require Tcl 8.6}]} {
+	proc b64:encode {bin} {
+		binary encode base64 $bin
+	}
+	proc b64:decode {str} {
+		binary decode base64 $str
+	}
+} elseif {![catch {package require base64}]} {
+	proc b64:encode {bin} {
+		::base64::encode -wrapchar "" $bin
+	}
+	proc b64:decode {bin} {
+		::base64::decode $bin
+	}
+} else {
+	die "No Base64 implementation found; need either Tcl 8.6 or tcllib/base64"
+}
+
 ## Raw events
 
 proc cap:connect {ev} {
@@ -148,7 +166,7 @@ proc sasl:step:PLAIN {data} {
 	global sasl-pass
 	if {$data == "+"} {
 		set out [join [list ${sasl-user} ${sasl-user} ${sasl-pass}] "\0"]
-		putnow "AUTHENTICATE [binary encode base64 $out]"
+		putnow "AUTHENTICATE [b64:encode $out]"
 	}
 }
 
