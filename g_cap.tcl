@@ -31,12 +31,6 @@ proc rparse {text} {
 	return $vec
 }
 
-proc serveridx {} {
-	foreach dcc [dcclist server] {
-		return [lindex $dcc 0]
-	}
-}
-
 ## Raw events
 
 proc cap:connect {ev} {
