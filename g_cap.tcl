@@ -4,8 +4,8 @@
 
 set caps-wanted "account-notify away-notify extended-join multi-prefix sasl"
 
-set sasl-user "Neph"
-set sasl-pass "lemonysnicket"
+set sasl-user "$username"
+set sasl-pass "hunter2"
 
 ## Internal state
 
