@@ -46,7 +46,31 @@ if {![catch {package require Tcl 8.6}]} {
 		::base64::decode $bin
 	}
 } else {
-	die "No Base64 implementation found; need either Tcl 8.6 or tcllib/base64"
+	set b64map {A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+		    a b c d e f g h i j k l m n o p q r s t u v w x y z
+		    0 1 2 3 4 5 6 7 8 9 + / =}
+	proc b64:encode {input} {
+		global b64map
+		set str {}
+		set pad 0
+		binary scan $input c* X
+		foreach {x y z} $X {
+			if {$y == {}} {set y 0; incr pad}
+			if {$z == {}} {set z 0; incr pad}
+			set n [expr {($x << 16) | ($y << 8) | $z}]
+			set a [expr {($n >> 18) & 63}]
+			set b [expr {($n >> 12) & 63}]
+			set c [expr {($n >>  6) & 63}]
+			set d [expr {$n & 63}]
+			append str \
+				[lindex $b64map $a] \
+				[lindex $b64map $b] \
+				[lindex $b64map [expr {$pad >= 2 ? 64 : $c}]] \
+				[lindex $b64map [expr {$pad >= 1 ? 64 : $d}]]
+		}
+		return $str
+	}
+	#die "No Base64 implementation found; need either Tcl 8.6 or tcllib/base64"
 }
 
 ## Raw events
