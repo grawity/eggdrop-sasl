@@ -1,7 +1,7 @@
 # g_atheme_need.tcl - handles "need op/unban/invite/key" events with Atheme
 # (c) 2011 <grawity@gmail.com>, under WTFPL v2 <http://sam.zoy.org/wtfpl>
 
-# NOTE: You must add a "services" user to your bot and .chattr it the +S flag
+# NOTE: You must add a "services" user, then .chattr services +fS
 
 proc need:op {channel type} {
 	putlog "($channel) requesting reop"
