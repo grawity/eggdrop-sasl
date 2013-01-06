@@ -64,3 +64,43 @@ diff -u -r1.4 server.help
  %{help=set botnick}%{+n}
  ###  %bset botnick%b
     this read-only variable returns the bots current nickname on irc.
+Index: doc/tcl-commands.doc
+===================================================================
+RCS file: /usr/local/cvsroot/eggdrop1.8/doc/tcl-commands.doc,v
+retrieving revision 1.12
+diff -u -r1.12 tcl-commands.doc
+--- doc/tcl-commands.doc	26 Jun 2012 21:20:49 -0000	1.12
++++ doc/tcl-commands.doc	6 Jan 2013 00:30:58 -0000
+@@ -2242,6 +2242,7 @@
+              userfile-loaded - called after userfile has been loaded
+ 
+              connect-server    - called just before we connect to an IRC server
++             preinit-server    - called immediately when we connect to the server
+              init-server       - called when we actually get on our IRC server
+              disconnect-server - called when we disconnect from our IRC server
+          Module: core
+Index: doc/html/tcl-commands.html
+===================================================================
+RCS file: /usr/local/cvsroot/eggdrop1.8/doc/html/tcl-commands.html,v
+retrieving revision 1.13
+diff -u -r1.13 tcl-commands.html
+--- doc/html/tcl-commands.html	26 Jun 2012 21:20:49 -0000	1.13
++++ doc/html/tcl-commands.html	6 Jan 2013 00:31:00 -0000
+@@ -4921,6 +4921,16 @@
+ 
+                   <tr valign="top">
+                     <td>
++                      <p><strong>preinit-server</strong></p>
++                    </td>
++
++                    <td>
++                      <p>called immediately we connect to the IRC server</p>
++                    </td>
++                  </tr>
++
++                  <tr valign="top">
++                    <td>
+                       <p><strong>init-server</strong></p>
+                     </td>
+ 
+End.
