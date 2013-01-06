@@ -3,6 +3,10 @@
 #
 # Requires: g_base64.tcl
 
+if {[info procs b64:encode] == ""} {
+	die "You must load g_base64.tcl first."
+}
+
 ## Configuration
 
 set caps-wanted "account-notify away-notify extended-join multi-prefix sasl"
