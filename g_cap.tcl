@@ -43,7 +43,7 @@ proc rparse {text} {
 
 ## Raw CAP commands -- required
 
-proc cap:connect {ev} {
+proc cap:on-connect {ev} {
 	global caps-preinit
 	switch $ev {
 		"preinit-server" {
@@ -57,7 +57,7 @@ proc cap:connect {ev} {
 	return 0
 }
 
-proc cap:cap {from keyword rest} {
+proc raw:cap {from keyword rest} {
 	global caps-preinit
 	global caps-wanted
 	set vec [rparse [string trim $rest]]
@@ -94,12 +94,12 @@ proc cap:cap {from keyword rest} {
 
 ## Raw IRCv3 extension commands
 
-proc cap:account {from keyword rest} {
+proc raw:cap-account {from keyword rest} {
 	user:account-changed $from $rest
 	return 1
 }
 
-proc cap:extjoin {from keyword rest} {
+proc raw:cap-extjoin {from keyword rest} {
 	set nuh [split $from "!"]
 	set vec [rparse $rest]
 	if {[llength $vec] > 1} {
@@ -111,7 +111,7 @@ proc cap:extjoin {from keyword rest} {
 	return 0
 }
 
-proc cap:away {from keyword rest} {
+proc raw:cap-away {from keyword rest} {
 	set vec [rparse $rest]
 	user:away-changed $from [lindex $vec 0]
 	return 0
@@ -119,18 +119,18 @@ proc cap:away {from keyword rest} {
 
 ## Raw IRC-SASL commands
 
-proc cap:authenticate {from keyword rest} {
+proc raw:authenticate {from keyword rest} {
 	sasl:step $rest
 	return 1
 }
 
-proc sasl:logged-in-as {from keyword rest} {
+proc numeric:sasl-logged-in {from keyword rest} {
 	set vec [rparse $rest]
 	putlog "Authenticated to services as [lindex $vec 2]."
 	return 1
 }
 
-proc sasl:success {from keyword rest} {
+proc numeric:sasl-success {from keyword rest} {
 	putnow "CAP END"
 	return 1
 }
@@ -167,6 +167,8 @@ proc sasl:step:PLAIN {data} {
 }
 
 ## IRCv3 extension events
+#
+# Currently these only print log messages. Any ideas on making them useful?
 
 proc user:account-changed {from account} {
 	set nuh [split $from "!"]
@@ -201,18 +203,18 @@ proc user:away-changed {from reason} {
 ## Event bindings
 
 # Basic CAP commands -- required
-bind EVNT - preinit-server	cap:connect
-bind EVNT - init-server		cap:connect
-bind raw - "CAP"		cap:cap
+bind EVNT - preinit-server	cap:on-connect
+bind EVNT - init-server		cap:on-connect
+bind raw - "CAP"		raw:cap
 
 # SASL commands
-bind raw - "AUTHENTICATE"	cap:authenticate
-bind raw - "900"		sasl:logged-in-as
-bind raw - "903"		sasl:success
+bind raw - "AUTHENTICATE"	raw:authenticate
+bind raw - "900"		numeric:sasl-logged-in
+bind raw - "903"		numeric:sasl-success
 
 # IRCv3 extensions -- currently useless
-bind raw - "AWAY"		cap:away
-bind raw - "JOIN"		cap:extjoin
-bind raw - "ACCOUNT"		cap:account
+bind raw - "AWAY"		raw:cap-away
+bind raw - "JOIN"		raw:cap-extjoin
+bind raw - "ACCOUNT"		raw:cap-account
 
 # EOF
