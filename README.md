@@ -1,8 +1,10 @@
 ## If you're looking for the Eggdrop SASL patch:
 
+ 0. For convenience, download this entire gist with `git clone` (see URLs on the left).
+
  1. Get Eggdrop 1.8 [from CVS][eggcvs]. (1.6 may work, but I have not tested it. 1.8 is better anyway – with SSL and IPv6 support.)
 
- 2. Apply [the patch][patch] `preinit-server-minimal.patch`. You don't need the full one.
+ 2. Apply [the patch][patch] `preinit-server-minimal.patch`. (You don't need the full patch.)
 
  3. Compile and install the patched Eggdrop.
 
