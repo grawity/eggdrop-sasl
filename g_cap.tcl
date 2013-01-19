@@ -10,11 +10,12 @@ if {[info procs b64:encode] == ""} {
 ## Configuration
 
 set caps-wanted "account-notify away-notify extended-join multi-prefix sasl"
+#set caps-wanted "sasl"
 
 set sasl-user "$username"
 set sasl-pass "hunter2"
 
-## Internal state
+## Internal state -- do not change
 
 set caps-enabled {}
 set caps-preinit 0
@@ -40,7 +41,7 @@ proc rparse {text} {
 	return $vec
 }
 
-## Raw events
+## Raw CAP commands -- required
 
 proc cap:connect {ev} {
 	global caps-preinit
@@ -91,6 +92,8 @@ proc cap:cap {from keyword rest} {
 	return 1
 }
 
+## Raw IRCv3 extension commands
+
 proc cap:account {from keyword rest} {
 	user:account-changed $from $rest
 	return 1
@@ -114,6 +117,8 @@ proc cap:away {from keyword rest} {
 	return 0
 }
 
+## Raw IRC-SASL commands
+
 proc cap:authenticate {from keyword rest} {
 	sasl:step $rest
 	return 1
@@ -130,7 +135,7 @@ proc sasl:success {from keyword rest} {
 	return 1
 }
 
-## SASL functions
+## SASL mechanism functions
 
 proc sasl:start {mech} {
 	global sasl-state
@@ -161,7 +166,7 @@ proc sasl:step:PLAIN {data} {
 	}
 }
 
-## User events
+## IRCv3 extension events
 
 proc user:account-changed {from account} {
 	set nuh [split $from "!"]
@@ -195,15 +200,19 @@ proc user:away-changed {from reason} {
 
 ## Event bindings
 
-bind raw - "ACCOUNT"		cap:account
-bind raw - "AUTHENTICATE"	cap:authenticate
-bind raw - "AWAY"		cap:away
+# Basic CAP commands -- required
+bind EVNT - preinit-server	cap:connect
+bind EVNT - init-server		cap:connect
 bind raw - "CAP"		cap:cap
-bind raw - "JOIN"		cap:extjoin
+
+# SASL commands
+bind raw - "AUTHENTICATE"	cap:authenticate
 bind raw - "900"		sasl:logged-in-as
 bind raw - "903"		sasl:success
 
-bind EVNT - preinit-server	cap:connect
-bind EVNT - init-server		cap:connect
+# IRCv3 extensions -- currently useless
+bind raw - "AWAY"		cap:away
+bind raw - "JOIN"		cap:extjoin
+bind raw - "ACCOUNT"		cap:account
 
 # EOF
