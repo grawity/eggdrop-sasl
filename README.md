@@ -9,14 +9,14 @@
  4. From your Eggdrop config, `source` the scripts and set the SASL information.
 
     ```tcl
-        source scripts/4455067/g_base64.tcl
-        source scripts/4455067/g_cap.tcl
+    source "scripts/4455067/g_base64.tcl"
+    source "scripts/4455067/g_cap.tcl"
 
-	set sasl-user $username
-	set sasl-pass "blahblah"
+    set sasl-user $username
+    set sasl-pass "blahblah"
 
-	# Let's turn off all "experimental" crap I added to g_cap
-	set caps-wanted "sasl"
+    # Let's turn off all "experimental" crap I added to g_cap
+    set caps-wanted "sasl"
     ```
 
  5. Enjoy.
