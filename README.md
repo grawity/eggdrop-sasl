@@ -4,7 +4,7 @@
 
  1. Get Eggdrop 1.8 [from CVS][eggcvs]. (1.6 may work, but I have not tested it. 1.8 is better anyway – with SSL and IPv6 support.)
 
- 2. Apply [the patch][patch] `preinit-server-minimal.patch`. (You don't need the full patch.)
+ 2. Apply [the patch][patch] `preinit-server.patch`.
 
  3. Compile and install the patched Eggdrop.
 
@@ -35,5 +35,5 @@
     Otherwise the bot might think it's being notice-flooded by ChanServ and ignore it.
 
 [eggcvs]: http://www.eggheads.org/devel/
-[xpatch]: https://gist.github.com/4455067#file-preinit-server-minimal-patch
-[patch]: #file-preinit-server-minimal-patch
+[xpatch]: https://gist.github.com/4455067#file-preinit-server-patch
+[patch]: #file-preinit-server-patch
