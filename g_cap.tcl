@@ -27,15 +27,16 @@ set sasl-mech "*"
 proc rparse {text} {
 	#putlog "rparse in:  $text"
 	if {[string index $text 0] == ":"} {
-		set vec [list [string range $text 1 end]]
+		set pos [string first " " $text]
+		set vec [list [string range $text 0 [expr $pos-1]]]
+	}
+
+	set pos [string first " :" $text]
+	if {$pos < 0} {
+		set vec [split $text " "]
 	} else {
-		set pos [string first " :" $text]
-		if {$pos < 0} {
-			set vec [split $text " "]
-		} else {
-			set vec [split [string range $text 0 [expr $pos-1]] " "]
-			lappend vec [string range $text [expr $pos+2] end]
-		}
+		set vec [split [string range $text 0 [expr $pos-1]] " "]
+		lappend vec [string range $text [expr $pos+2] end]
 	}
 	#putlog "rparse out: $vec"
 	return $vec
