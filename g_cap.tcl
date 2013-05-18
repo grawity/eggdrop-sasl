@@ -177,11 +177,9 @@ proc user:account-changed {from account} {
 	if {$account == "*"} {
 		putlog "$nick logged out"
 		set hand [finduser $from]
-		setuser $hand XTRA services-account
 	} else {
 		putlog "$nick logged in as $account"
 		set hand [finduser $from]
-		setuser $hand XTRA services-account $account
 	}
 }
 
