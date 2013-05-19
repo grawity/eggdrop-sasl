@@ -136,6 +136,14 @@ proc numeric:sasl-success {from keyword rest} {
 	return 1
 }
 
+proc numeric:sasl-failed {from keyword rest} {
+	putlog "Authentication failed"
+	# TODO: make this disconnect
+	putnow "CAP END"
+	#putnow "QUIT"
+	return 1
+}
+
 ## SASL mechanism functions
 
 proc sasl:start {mech} {
@@ -210,6 +218,7 @@ bind raw - "CAP"		raw:cap
 bind raw - "AUTHENTICATE"	raw:authenticate
 bind raw - "900"		numeric:sasl-logged-in
 bind raw - "903"		numeric:sasl-success
+bind raw - "904"		numeric:sasl-failed
 
 # IRCv3 extensions -- currently useless
 bind raw - "AWAY"		raw:cap-away
