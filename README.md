@@ -38,5 +38,5 @@
 
 [eggcvs]: http://www.eggheads.org/devel/
 [egggit]: https://github.com/eggheads/eggdrop-1.8
-[xpatch]: https://gist.github.com/4455067#file-preinit-server-patch
+[mygit]: https://github.com/grawity/eggdrop-1.8
 [patch]: #file-preinit-server-patch
