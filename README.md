@@ -2,9 +2,11 @@
 
  0. For convenience, download this entire gist with `git clone` (see URLs on the left).
 
- 1. Get Eggdrop 1.8 [from CVS][eggcvs]. (1.6 may work, but I have not tested it. 1.8 is better anyway – with SSL and IPv6 support.)
+ 1. Get Eggdrop 1.8 [from CVS][eggcvs] or [from Git][egggit] (1.6 may work, but I have not tested it. 1.8 is better anyway – with SSL and IPv6 support.)
 
  2. Apply [the patch][patch] `preinit-server.patch`.
+
+    Alternatively, you can use [my Git fork][mygit] and `git checkout` the branch `preinit`.
 
  3. Compile and install the patched Eggdrop.
 
@@ -35,5 +37,6 @@
     Otherwise the bot can think it's being notice-flooded by ChanServ and ignore it.
 
 [eggcvs]: http://www.eggheads.org/devel/
+[egggit]: https://github.com/eggheads/eggdrop-1.8
 [xpatch]: https://gist.github.com/4455067#file-preinit-server-patch
 [patch]: #file-preinit-server-patch
