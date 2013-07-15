@@ -1,6 +1,6 @@
 ## Eggdrop 1.8 SASL patch:
 
- 0. For convenience, download this entire gist with `git clone` (see URLs on the left).
+ 0. For convenience, download this entire gist with `git clone https://gist.github.com/4455067.git`
 
  1. Get Eggdrop 1.8 [from CVS][eggcvs] or [from Git][egggit] (1.6 may work, but I have not tested it. 1.8 is better anyway – with SSL and IPv6 support.)
 
