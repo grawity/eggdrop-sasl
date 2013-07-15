@@ -1,4 +1,4 @@
-## If you're looking for the Eggdrop SASL patch:
+## Eggdrop 1.8 SASL patch:
 
  0. For convenience, download this entire gist with `git clone` (see URLs on the left).
 
@@ -23,7 +23,7 @@
 
  5. Enjoy.
 
-## If you're looking for the Atheme auto-reop script:
+## Atheme auto-reop script:
 
  1. From your Eggdrop config, `source` the **g_atheme_need.tcl** script.
 
@@ -32,7 +32,7 @@
         .+user services *!*@services.example.com
         .chattr services +fS
 
-    Otherwise the bot might think it's being notice-flooded by ChanServ and ignore it.
+    Otherwise the bot can think it's being notice-flooded by ChanServ and ignore it.
 
 [eggcvs]: http://www.eggheads.org/devel/
 [xpatch]: https://gist.github.com/4455067#file-preinit-server-patch
