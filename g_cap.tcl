@@ -1,4 +1,4 @@
-# g_cap.tcl - Experimental IRCv3 capability support, including SASL
+# g_cap.tcl - IRCv3 capability negotiation and SASL support
 # (c) 2013 <grawity@gmail.com>, under WTFPL v2 <http://sam.zoy.org/wtfpl>
 #
 # Requires: g_base64.tcl
@@ -37,7 +37,7 @@ proc rparse {text} {
 	return $vec
 }
 
-## Raw CAP commands -- required
+## Raw CAP commands
 
 proc cap:on-connect {ev} {
 	global caps-preinit
