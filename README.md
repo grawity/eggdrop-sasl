@@ -14,9 +14,6 @@ The `preinit-server` patch was merged into Eggdrop 1.8 recently, so you do not n
 
     set sasl-user $username
     set sasl-pass "blahblah"
-
-    # Let's turn off all "experimental" crap I added to g_cap
-    set caps-wanted "sasl"
     ```
 
  3. Enjoy.

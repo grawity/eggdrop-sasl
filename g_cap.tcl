@@ -3,21 +3,19 @@
 #
 # Requires: g_base64.tcl
 
-if {[info procs b64:encode] == ""} {
-	die "You must load g_base64.tcl first."
-}
-
-## Configuration
-
-set caps-wanted "account-notify away-notify extended-join multi-prefix sasl"
-#set caps-wanted "sasl"
+## Configuration -- set these in your eggdrop.conf
 
 set sasl-user "$username"
 set sasl-pass "hunter2"
 
-## Internal state -- do not change
+## Internal state -- do not edit anything below
+
+if {[info procs b64:encode] == ""} {
+	die "You must load g_base64.tcl first."
+}
 
 set caps-enabled {}
+set caps-wanted {multi-prefix sasl}
 set caps-preinit 0
 set sasl-state 0
 set sasl-mech "*"
@@ -25,12 +23,10 @@ set sasl-mech "*"
 ## Utility functions
 
 proc rparse {text} {
-	#putlog "rparse in:  $text"
 	if {[string index $text 0] == ":"} {
 		set pos [string first " " $text]
 		set vec [list [string range $text 0 [expr $pos-1]]]
 	}
-
 	set pos [string first " :" $text]
 	if {$pos < 0} {
 		set vec [split $text " "]
@@ -38,7 +34,6 @@ proc rparse {text} {
 		set vec [split [string range $text 0 [expr $pos-1]] " "]
 		lappend vec [string range $text [expr $pos+2] end]
 	}
-	#putlog "rparse out: $vec"
 	return $vec
 }
 
@@ -91,31 +86,6 @@ proc raw:cap {from keyword rest} {
 		}
 	}
 	return 1
-}
-
-## Raw IRCv3 extension commands
-
-proc raw:cap-account {from keyword rest} {
-	user:account-changed $from $rest
-	return 1
-}
-
-proc raw:cap-extjoin {from keyword rest} {
-	set nuh [split $from "!"]
-	set vec [rparse $rest]
-	if {[llength $vec] > 1} {
-		set account [lindex $vec 1]
-		set gecos [lindex $vec 2]
-		user:account-changed $from $account
-		user:gecos-changed $from $gecos
-	}
-	return 0
-}
-
-proc raw:cap-away {from keyword rest} {
-	set vec [rparse $rest]
-	user:away-changed $from [lindex $vec 0]
-	return 0
 }
 
 ## Raw IRC-SASL commands
@@ -175,54 +145,15 @@ proc sasl:step:PLAIN {data} {
 	}
 }
 
-## IRCv3 extension events
-#
-# Currently these only print log messages. Any ideas on making them useful?
-
-proc user:account-changed {from account} {
-	set nuh [split $from "!"]
-	set nick [lindex $nuh 0]
-	if {$account == "*"} {
-		putlog "$nick logged out"
-		set hand [finduser $from]
-	} else {
-		putlog "$nick logged in as $account"
-		set hand [finduser $from]
-	}
-}
-
-proc user:gecos-changed {from gecos} {
-	set nuh [split $from "!"]
-	set nick [lindex $nuh 0]
-	putlog "$nick is actually \"$gecos\""
-}
-
-proc user:away-changed {from reason} {
-	set nuh [split $from "!"]
-	set nick [lindex $nuh 0]
-	if {$reason == ""} {
-		putlog "$nick is back"
-	} else {
-		putlog "$nick is away"
-	}
-}
-
 ## Event bindings
 
-# Basic CAP commands -- required
 bind EVNT - preinit-server	cap:on-connect
 bind EVNT - init-server		cap:on-connect
 bind raw - "CAP"		raw:cap
 
-# SASL commands
 bind raw - "AUTHENTICATE"	raw:authenticate
 bind raw - "900"		numeric:sasl-logged-in
 bind raw - "903"		numeric:sasl-success
 bind raw - "904"		numeric:sasl-failed
-
-# IRCv3 extensions -- currently useless
-bind raw - "AWAY"		raw:cap-away
-bind raw - "JOIN"		raw:cap-extjoin
-bind raw - "ACCOUNT"		raw:cap-account
 
 # EOF
