@@ -18,7 +18,7 @@ set caps-enabled {}
 set caps-wanted {multi-prefix sasl}
 set caps-preinit 0
 set sasl-state 0
-set sasl-mech "PLAIN"
+set sasl-mech "*"
 
 ## Utility functions
 
