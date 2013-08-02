@@ -33,18 +33,18 @@ proc user:away-changed {from reason} {
 
 ## Setup -- do not edit anything below
 
-if {[info procs raw:cap] == ""} {
+if {[info procs raw:CAP] == ""} {
 	die "You must load g_cap.tcl first."
 }
 
 lappend caps-wanted {account-notify away-notify extended-join}
 
-proc raw:cap-account {from keyword rest} {
+proc raw:ACCOUNT {from keyword rest} {
 	user:account-changed $from $rest
 	return 1
 }
 
-proc raw:cap-extjoin {from keyword rest} {
+proc raw:JOIN-extended {from keyword rest} {
 	set nuh [split $from "!"]
 	set vec [rparse $rest]
 	if {[llength $vec] > 1} {
@@ -56,12 +56,12 @@ proc raw:cap-extjoin {from keyword rest} {
 	return 0
 }
 
-proc raw:cap-away {from keyword rest} {
+proc raw:AWAY {from keyword rest} {
 	set vec [rparse $rest]
 	user:away-changed $from [lindex $vec 0]
 	return 0
 }
 
-bind raw - "AWAY"		raw:cap-away
-bind raw - "JOIN"		raw:cap-extjoin
-bind raw - "ACCOUNT"		raw:cap-account
+bind raw - "AWAY"		raw:AWAY
+bind raw - "JOIN"		raw:JOIN-extended
+bind raw - "ACCOUNT"		raw:ACCOUNT

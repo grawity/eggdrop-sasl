@@ -53,7 +53,7 @@ proc cap:on-connect {ev} {
 	return 0
 }
 
-proc raw:cap {from keyword rest} {
+proc raw:CAP {from keyword rest} {
 	global caps-preinit
 	global caps-wanted
 	set vec [rparse [string trim $rest]]
@@ -90,7 +90,7 @@ proc raw:cap {from keyword rest} {
 
 ## Raw IRC-SASL commands
 
-proc raw:authenticate {from keyword rest} {
+proc raw:AUTHENTICATE {from keyword rest} {
 	sasl:step $rest
 	return 1
 }
@@ -149,9 +149,9 @@ proc sasl:step:PLAIN {data} {
 
 bind EVNT - preinit-server	cap:on-connect
 bind EVNT - init-server		cap:on-connect
-bind raw - "CAP"		raw:cap
+bind raw - "CAP"		raw:CAP
 
-bind raw - "AUTHENTICATE"	raw:authenticate
+bind raw - "AUTHENTICATE"	raw:AUTHENTICATE
 bind raw - "900"		numeric:sasl-logged-in
 bind raw - "903"		numeric:sasl-success
 bind raw - "904"		numeric:sasl-failed
