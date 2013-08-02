@@ -1,16 +1,12 @@
 ## Eggdrop 1.8 SASL patch:
 
+The `preinit-server` patch was merged into Eggdrop 1.8 recently, so you do not need to patch it manually anymore.
+
  0. For convenience, download this entire gist with `git clone https://gist.github.com/4455067.git`
 
- 1. Get Eggdrop 1.8 [from CVS][eggcvs] or [from Git][egggit] (1.6 may work, but I have not tested it. 1.8 is better anyway – with SSL and IPv6 support.)
+ 1. Get Eggdrop 1.8 [from CVS][eggcvs] or [from Git][egggit]. Compile and install.
 
- 2. Apply [the patch][patch] `preinit-server.patch`.
-
-    Alternatively, you can use [my Git fork][mygit] and `git checkout` the branch `preinit`.
-
- 3. Compile and install the patched Eggdrop.
-
- 4. From your Eggdrop config, `source` the scripts and set the SASL information.
+ 2. From your Eggdrop config, `source` the scripts and set the SASL information.
 
     ```tcl
     source "scripts/4455067/g_base64.tcl"
@@ -23,7 +19,7 @@
     set caps-wanted "sasl"
     ```
 
- 5. Enjoy.
+ 3. Enjoy.
 
 ## Atheme auto-reop script:
 
@@ -38,5 +34,3 @@
 
 [eggcvs]: http://www.eggheads.org/devel/
 [egggit]: https://github.com/eggheads/eggdrop-1.8
-[mygit]: https://github.com/grawity/eggdrop-1.8
-[patch]: #file-preinit-server-patch
