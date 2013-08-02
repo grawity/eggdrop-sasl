@@ -1,10 +1,10 @@
-## Eggdrop 1.8 SASL patch:
-
-The `preinit-server` patch was [merged into Eggdrop 1.8][commit] recently, so you do not need to patch it manually anymore.
+## Eggdrop 1.8 SASL script:
 
  0. For convenience, download this entire gist with `git clone https://gist.github.com/4455067.git`
 
  1. Get Eggdrop 1.8 [from Git][egggit] or [from CVS][eggcvs]. Compile and install.
+ 
+    The `preinit-server` patch was [merged into Eggdrop 1.8][commit] recently, so you do not need to patch it manually anymore.
 
  2. From your Eggdrop config, `source` the scripts and set the SASL information.
 
@@ -16,7 +16,7 @@ The `preinit-server` patch was [merged into Eggdrop 1.8][commit] recently, so yo
     set sasl-pass "blahblah"
     ```
 
- 3. Enjoy.
+(For those who still need it, the [old patch][patch] is still there.)
 
 ## Atheme auto-reop script:
 
@@ -32,3 +32,4 @@ The `preinit-server` patch was [merged into Eggdrop 1.8][commit] recently, so yo
 [eggcvs]: http://www.eggheads.org/devel/
 [egggit]: https://github.com/eggheads/eggdrop-1.8
 [commit]: https://github.com/eggheads/eggdrop-1.8/commit/343f08e224d53ebe53e7708d2f3c3f59c646d0c9
+[patch]: https://gist.github.com/grawity/4455067/eb63e5e1764df2a4d9979fbdb52554e698da3ce1#file-preinit-server-patch
