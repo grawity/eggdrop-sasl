@@ -31,7 +31,7 @@ set caps-preinit 0
 set sasl-mechs {}
 set sasl-midx 0
 set sasl-mech "*"
-set sasl-state 0
+set sasl-step 0
 
 ## Utility functions
 
@@ -182,7 +182,7 @@ proc sasl:get-next-mech {} {
 
 proc sasl:start {mech} {
 	global sasl-mech
-	global sasl-state
+	global sasl-step
 
 	if {[info procs sasl:step:$mech] == ""} {
 		putlog "Mechanism $mech is not supported by this script!"
@@ -191,19 +191,19 @@ proc sasl:start {mech} {
 	}
 
 	set sasl-mech $mech
-	set sasl-state 0
+	set sasl-step 0
 	putlog "Starting SASL $mech authentication"
 	sasl:step ""
 }
 
 proc sasl:step {data} {
-	global sasl-state
+	global sasl-step
 	global sasl-mech
 
-	if {${sasl-state} == 0} {
+	if {${sasl-step} == 0} {
 		putnow "AUTHENTICATE ${sasl-mech}"
 	} else {
-		set out [sasl:step:${sasl-mech} $data]
+		set out [sasl:step:${sasl-mech} ${sasl-step} $data]
 		set len 400
 		set max [string length $out]
 		set ofs 0
@@ -216,14 +216,14 @@ proc sasl:step {data} {
 			putnow "AUTHENTICATE +"
 		}
 	}
-	set sasl-state [expr ${sasl-state} + 1]
+	set sasl-step [expr ${sasl-step} + 1]
 }
 
-proc sasl:step:PLAIN {data} {
+proc sasl:step:PLAIN {step data} {
 	global sasl-user
 	global sasl-pass
 
-	if {$data == "+"} {
+	if {$step == 1 && $data == "+"} {
 		set out [join [list ${sasl-user} ${sasl-user} ${sasl-pass}] "\0"]
 		return [b64:encode $out]
 	} else {
@@ -231,18 +231,17 @@ proc sasl:step:PLAIN {data} {
 	}
 }
 
-proc sasl:step:EXTERNAL {data} {
+proc sasl:step:EXTERNAL {step data} {
 	global sasl-user
 
-	if {$data == "+"} {
+	if {$step == 1 && $data == "+"} {
 		return [b64:encode ${sasl-user}]
 	} else {
 		return "*"
 	}
 }
 
-proc sasl:step:ECDSA-NIST256P-CHALLENGE {data} {
-	global sasl-state
+proc sasl:step:ECDSA-NIST256P-CHALLENGE {step data} {
 	global sasl-user
 	global sasl-ecdsa-key
 
@@ -251,13 +250,13 @@ proc sasl:step:ECDSA-NIST256P-CHALLENGE {data} {
 		return "*"
 	}
 
-	if {${sasl-state} == 1} {
+	if {$step == 1} {
 		if {$data == "+"} {
 			return [b64:encode ${sasl-user}]
 		} else {
 			return "*"
 		}
-	} elseif {${sasl-state} == 2} {
+	} elseif {$step == 2} {
 		return [exec ecdsatool sign ${sasl-ecdsa-key} $data]
 	} else {
 		return "*"
