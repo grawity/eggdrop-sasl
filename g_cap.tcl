@@ -6,12 +6,13 @@
 ## Configuration -- set these in your eggdrop.conf
 #
 # mechanisms:
-#   PLAIN uses the password
+#   PLAIN uses ${sasl-pass} as the password
 #   EXTERNAL uses the SSL certificate
 
 set sasl-user "$username"
 set sasl-pass "hunter2"
-set sasl-use-mechs {PLAIN EXTERNAL}
+#set sasl-ecdsa-key "data/$username.eckey"
+set sasl-use-mechs {EXTERNAL PLAIN}
 
 ## Internal state -- do not edit anything below
 
