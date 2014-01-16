@@ -12,7 +12,8 @@
 set sasl-user "$username"
 set sasl-pass "hunter2"
 #set sasl-ecdsa-key "data/$username.eckey"
-set sasl-use-mechs {EXTERNAL PLAIN}
+set sasl-use-mechs {PLAIN}
+#set sasl-use-mechs {EXTERNAL ECDSA-NIST256P-CHALLENGE PLAIN}
 
 ## Internal state -- do not edit anything below
 
@@ -224,6 +225,29 @@ proc sasl:step:EXTERNAL {data} {
 
 	if {$data == "+"} {
 		return [b64:encode ${sasl-user}]
+	} else {
+		return "*"
+	}
+}
+
+proc sasl:step:ECDSA-NIST256P-CHALLENGE {data} {
+	global sasl-state
+	global sasl-user
+	global sasl-ecdsa-key
+
+	if {![file exists ${sasl-ecdsa-key}]} {
+		putlog "Error: \${sasl-ecdsa-key} must point to a private key."
+		return "*"
+	}
+
+	if {${sasl-state} == 1} {
+		if {$data == "+"} {
+			return [b64:encode ${sasl-user}]
+		} else {
+			return "*"
+		}
+	} elseif {${sasl-state} == 2} {
+		return [exec ecdsatool sign ${sasl-ecdsa-key} $data]
 	} else {
 		return "*"
 	}
