@@ -178,7 +178,7 @@ proc sasl:start {mech} {
 	}
 
 	set sasl-mech $mech
-	set sasl-state 1
+	set sasl-state 0
 	putlog "Starting SASL $mech authentication"
 	sasl:step ""
 }
@@ -187,19 +187,19 @@ proc sasl:step {data} {
 	global sasl-state
 	global sasl-mech
 
-	if {${sasl-state} == 1} {
+	if {${sasl-state} == 0} {
 		putnow "AUTHENTICATE ${sasl-mech}"
 	} else {
 		set out [sasl:step:${sasl-mech} $data]
 		set len 400
-		set max [string length $data]
+		set max [string length $out]
 		set ofs 0
 		while {$ofs < $max} {
 			set buf [string range $out $ofs [expr {$ofs + $len - 1}]]
 			incr ofs $len
 			putnow "AUTHENTICATE $buf"
 		}
-		if {[string length $buf] == $len} {
+		if {$max == 0 || [string length $buf] == $len} {
 			putnow "AUTHENTICATE +"
 		}
 	}
@@ -214,7 +214,6 @@ proc sasl:step:PLAIN {data} {
 		set out [join [list ${sasl-user} ${sasl-user} ${sasl-pass}] "\0"]
 		return [b64:encode $out]
 	} else {
-		putlog "SASL PLAIN: Unexpected input, aborting"
 		return "*"
 	}
 }
@@ -225,7 +224,6 @@ proc sasl:step:EXTERNAL {data} {
 	if {$data == "+"} {
 		return [b64:encode ${sasl-user}]
 	} else {
-		putlog "SASL PLAIN: Unexpected input, aborting"
 		return "*"
 	}
 }
