@@ -22,8 +22,10 @@ if {[info procs b64:encode] == ""} {
 set caps-enabled {}
 set caps-wanted {multi-prefix sasl}
 set caps-preinit 0
-set sasl-state 0
+set sasl-mechs {}
+set sasl-midx 0
 set sasl-mech "*"
+set sasl-state 0
 
 ## Utility functions
 
@@ -132,9 +134,10 @@ proc numeric:sasl-failed {from keyword rest} {
 }
 
 proc numeric:sasl-mechlist {from keyword rest} {
+	global sasl-mechs
+
 	set vec [rparse $rest]
-	set mechs [lindex $vec 2]
-	# TODO: make use of this
+	set sasl-mechs [lindex $vec 2]
 	return 1
 }
 
@@ -142,34 +145,41 @@ proc numeric:sasl-mechlist {from keyword rest} {
 
 proc sasl:get-first-mech {} {
 	global sasl-use-mechs
+	global sasl-mechs
 	global sasl-midx
-	global sasl-mech
 
+	set sasl-mechs ${sasl-use-mechs}
 	set sasl-midx 0
-	set sasl-mech [lindex ${sasl-use-mechs} 0]
-	return ${sasl-mech}
+	return [lindex ${sasl-use-mechs} 0]
 }
 
 proc sasl:get-next-mech {} {
 	global sasl-use-mechs
+	global sasl-mechs
 	global sasl-midx
-	global sasl-mech
 
-	if {[incr sasl-midx] < [llength ${sasl-use-mechs}]} {
-		set sasl-mech [lindex ${sasl-use-mechs} ${sasl-midx}]
-	} else {
-		set sasl-mech "*"
+	while {[incr sasl-midx] < [llength ${sasl-use-mechs}]} {
+		set mech [lindex ${sasl-use-mechs} ${sasl-midx}]
+		if {[lsearch -exact ${sasl-mechs} $mech] != -1} {
+			return $mech
+		}
 	}
-	return ${sasl-mech}
+	return "*"
 }
 
 proc sasl:start {mech} {
 	global sasl-mech
 	global sasl-state
 
+	if {[info procs sasl:step:$mech] == ""} {
+		putlog "Mechanism $mech is not supported by this script!"
+		putnow "AUTHENTICATE *"
+		return
+	}
+
 	set sasl-mech $mech
 	set sasl-state 1
-	putlog "Starting SASL $mech authentication."
+	putlog "Starting SASL $mech authentication"
 	sasl:step ""
 }
 
