@@ -72,6 +72,8 @@ proc raw:CAP {from keyword rest} {
 			}
 			if {[llength $wanted]} {
 				putnow "CAP REQ :[join $wanted " "]"
+			} else {
+				putnow "CAP END"
 			}
 		}
 		ACK {
