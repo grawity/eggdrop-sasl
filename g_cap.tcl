@@ -64,6 +64,7 @@ proc raw:CAP {from keyword rest} {
 	}
 	switch $cmd {
 		LS {
+			putlog "Server offers caps: $caps"
 			set wanted {}
 			foreach cap $caps {
 				if {[lsearch -exact ${caps-wanted} $cap] != -1} {
@@ -71,12 +72,15 @@ proc raw:CAP {from keyword rest} {
 				}
 			}
 			if {[llength $wanted]} {
-				putnow "CAP REQ :[join $wanted " "]"
+				set wanted [join $wanted " "]
+				putlog "Requesting caps: $wanted"
+				putnow "CAP REQ :$wanted"
 			} else {
 				putnow "CAP END"
 			}
 		}
 		ACK {
+			putlog "Server enabled caps: $caps"
 			if {[lsearch -exact $caps "sasl"] != -1} {
 				sasl:start PLAIN
 			} else {
@@ -84,6 +88,7 @@ proc raw:CAP {from keyword rest} {
 			}
 		}
 		NAK {
+			putlog "Server rejected caps: $caps"
 			putnow "CAP END"
 		}
 	}
