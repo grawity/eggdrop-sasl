@@ -180,11 +180,19 @@ proc sasl:step {data} {
 	if {${sasl-state} == 1} {
 		putnow "AUTHENTICATE ${sasl-mech}"
 	} else {
-		set data [sasl:step:${sasl-mech} $data]
-		# TODO: set data [b64:wrap $data 400] &c.
-		putnow "AUTHENTICATE ${data}"
+		set out [sasl:step:${sasl-mech} $data]
+		set len 400
+		set max [string length $data]
+		set ofs 0
+		while {$ofs < $max} {
+			set buf [string range $out $ofs [expr {$ofs + $len - 1}]]
+			incr ofs $len
+			putnow "AUTHENTICATE $buf"
+		}
+		if {[string length $buf] == $len} {
+			putnow "AUTHENTICATE +"
+		}
 	}
-
 	set sasl-state [expr ${sasl-state} + 1]
 }
 

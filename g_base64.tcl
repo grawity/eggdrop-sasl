@@ -78,3 +78,22 @@ if {![catch {package require Tcl 8.6}]} {
 		return $str
 	}
 }
+
+proc b64:wrap {str {len 1}} {
+	if {$len <= 0} {
+		return -code error "len must be > 0"
+	}
+	if {$len == 1} {
+		return [split $str {}]
+	}
+	set result [list]
+	set max [string length $str]
+	set i 0
+	set j [expr {$len -1}]
+	while {$i < $max} {
+		lappend result [string range $str $i $j]
+		incr i $len
+		incr j $len
+	}
+	return $result
+}
