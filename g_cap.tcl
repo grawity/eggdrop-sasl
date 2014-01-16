@@ -4,9 +4,14 @@
 # Requires: g_base64.tcl
 
 ## Configuration -- set these in your eggdrop.conf
+#
+# mechanisms:
+#   PLAIN uses the password
+#   EXTERNAL uses the SSL certificate
 
 set sasl-user "$username"
 set sasl-pass "hunter2"
+set sasl-use-mech PLAIN
 
 ## Internal state -- do not edit anything below
 
@@ -56,6 +61,7 @@ proc cap:on-connect {ev} {
 proc raw:CAP {from keyword rest} {
 	global caps-preinit
 	global caps-wanted
+	global sasl-use-mech
 	set vec [rparse [string trim $rest]]
 	set cmd [lindex $vec 1]
 	set caps [lindex $vec 2]
@@ -82,7 +88,7 @@ proc raw:CAP {from keyword rest} {
 		ACK {
 			putlog "Server enabled caps: $caps"
 			if {[lsearch -exact $caps "sasl"] != -1} {
-				sasl:start PLAIN
+				sasl:start ${sasl-use-mech}
 			} else {
 				putnow "CAP END"
 			}
@@ -149,6 +155,16 @@ proc sasl:step:PLAIN {data} {
 	if {$data == "+"} {
 		set out [join [list ${sasl-user} ${sasl-user} ${sasl-pass}] "\0"]
 		putnow "AUTHENTICATE [b64:encode $out]"
+	} else {
+		putlog "SASL PLAIN: Unexpected input, aborting"
+		putnow "AUTHENTICATE *"
+	}
+}
+
+proc sasl:step:EXTERNAL {data} {
+	global sasl-user
+	if {$data == "+"} {
+		putnow "AUTHENTICATE [b64:encode ${sasl-user}]"
 	} else {
 		putlog "SASL PLAIN: Unexpected input, aborting"
 		putnow "AUTHENTICATE *"
