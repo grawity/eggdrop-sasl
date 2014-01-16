@@ -11,7 +11,7 @@
 
 set sasl-user "$username"
 set sasl-pass "hunter2"
-set sasl-use-mech PLAIN
+set sasl-use-mechs {PLAIN EXTERNAL}
 
 ## Internal state -- do not edit anything below
 
@@ -61,7 +61,6 @@ proc cap:on-connect {ev} {
 proc raw:CAP {from keyword rest} {
 	global caps-preinit
 	global caps-wanted
-	global sasl-use-mech
 	set vec [rparse [string trim $rest]]
 	set cmd [lindex $vec 1]
 	set caps [lindex $vec 2]
@@ -88,7 +87,7 @@ proc raw:CAP {from keyword rest} {
 		ACK {
 			putlog "Server enabled caps: $caps"
 			if {[lsearch -exact $caps "sasl"] != -1} {
-				sasl:start ${sasl-use-mech}
+				sasl:start [sasl:get-first-mech]
 			} else {
 				putnow "CAP END"
 			}
@@ -120,20 +119,56 @@ proc numeric:sasl-success {from keyword rest} {
 }
 
 proc numeric:sasl-failed {from keyword rest} {
-	putlog "Authentication failed"
-	# TODO: make this disconnect
-	putnow "CAP END"
-	#putnow "QUIT"
+	set mech [sasl:get-next-mech]
+	if {$mech == "*"} {
+		putlog "Authentication failed, disconnecting"
+		putnow "QUIT"
+		putnow "CAP END"
+	} else {
+		putlog "Authentication failed, trying next mechanism"
+		sasl:start $mech
+	}
+	return 1
+}
+
+proc numeric:sasl-mechlist {from keyword rest} {
+	set vec [rparse $rest]
+	set mechs [lindex $vec 2]
+	# TODO: make use of this
 	return 1
 }
 
 ## SASL mechanism functions
 
-proc sasl:start {mech} {
-	global sasl-state
+proc sasl:get-first-mech {} {
+	global sasl-use-mechs
+	global sasl-midx
 	global sasl-mech
-	set sasl-state 1
+
+	set sasl-midx 0
+	set sasl-mech [lindex ${sasl-use-mechs} 0]
+	return ${sasl-mech}
+}
+
+proc sasl:get-next-mech {} {
+	global sasl-use-mechs
+	global sasl-midx
+	global sasl-mech
+
+	if {[incr sasl-midx] < [llength ${sasl-use-mechs}]} {
+		set sasl-mech [lindex ${sasl-use-mechs} ${sasl-midx}]
+	} else {
+		set sasl-mech "*"
+	}
+	return ${sasl-mech}
+}
+
+proc sasl:start {mech} {
+	global sasl-mech
+	global sasl-state
+
 	set sasl-mech $mech
+	set sasl-state 1
 	putlog "Starting SASL $mech authentication."
 	sasl:step ""
 }
@@ -181,5 +216,6 @@ bind raw - "AUTHENTICATE"	raw:AUTHENTICATE
 bind raw - "900"		numeric:sasl-logged-in
 bind raw - "903"		numeric:sasl-success
 bind raw - "904"		numeric:sasl-failed
+bind raw - "908"		numeric:sasl-mechlist
 
 # EOF
