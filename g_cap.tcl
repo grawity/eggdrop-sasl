@@ -176,33 +176,39 @@ proc sasl:start {mech} {
 proc sasl:step {data} {
 	global sasl-state
 	global sasl-mech
+
 	if {${sasl-state} == 1} {
 		putnow "AUTHENTICATE ${sasl-mech}"
 	} else {
-		sasl:step:${sasl-mech} $data
+		set data [sasl:step:${sasl-mech} $data]
+		# TODO: set data [b64:wrap $data 400] &c.
+		putnow "AUTHENTICATE ${data}"
 	}
+
 	set sasl-state [expr ${sasl-state} + 1]
 }
 
 proc sasl:step:PLAIN {data} {
 	global sasl-user
 	global sasl-pass
+
 	if {$data == "+"} {
 		set out [join [list ${sasl-user} ${sasl-user} ${sasl-pass}] "\0"]
-		putnow "AUTHENTICATE [b64:encode $out]"
+		return [b64:encode $out]
 	} else {
 		putlog "SASL PLAIN: Unexpected input, aborting"
-		putnow "AUTHENTICATE *"
+		return "*"
 	}
 }
 
 proc sasl:step:EXTERNAL {data} {
 	global sasl-user
+
 	if {$data == "+"} {
-		putnow "AUTHENTICATE [b64:encode ${sasl-user}]"
+		return [b64:encode ${sasl-user}]
 	} else {
 		putlog "SASL PLAIN: Unexpected input, aborting"
-		putnow "AUTHENTICATE *"
+		return "*"
 	}
 }
 
