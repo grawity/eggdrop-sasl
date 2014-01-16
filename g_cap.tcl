@@ -4,16 +4,21 @@
 # Requires: g_base64.tcl
 
 ## Configuration -- set these in your eggdrop.conf
-#
-# mechanisms:
-#   PLAIN uses ${sasl-pass} as the password
-#   EXTERNAL uses the SSL certificate
 
-set sasl-user "$username"
-set sasl-pass "hunter2"
-#set sasl-ecdsa-key "data/$username.eckey"
+# available mechs: EXTERNAL, ECDSA-NIST256P-CHALLENGE, PLAIN
 set sasl-use-mechs {PLAIN}
-#set sasl-use-mechs {EXTERNAL ECDSA-NIST256P-CHALLENGE PLAIN}
+
+# services username
+set sasl-user "$username"
+
+# password for PLAIN
+set sasl-pass "hunter2"
+
+# private key for ECDSA-NIST256P-CHALLENGE
+set sasl-ecdsa-key "data/$username.eckey"
+
+# extra capabilities to ask for
+set caps-wanted {multi-prefix}
 
 ## Internal state -- do not edit anything below
 
@@ -22,7 +27,6 @@ if {[info procs b64:encode] == ""} {
 }
 
 set caps-enabled {}
-set caps-wanted {multi-prefix sasl}
 set caps-preinit 0
 set sasl-mechs {}
 set sasl-midx 0
@@ -50,6 +54,7 @@ proc rparse {text} {
 
 proc cap:on-connect {ev} {
 	global caps-preinit
+
 	switch $ev {
 		"preinit-server" {
 			set caps-preinit 1
@@ -65,18 +70,24 @@ proc cap:on-connect {ev} {
 proc raw:CAP {from keyword rest} {
 	global caps-preinit
 	global caps-wanted
-	set vec [rparse [string trim $rest]]
-	set cmd [lindex $vec 1]
-	set caps [lindex $vec 2]
+	global sasl-user
+
 	if {${caps-preinit} == 0} {
 		return 1
 	}
+
+	set vec [rparse [string trim $rest]]
+	set cmd [lindex $vec 1]
+	set caps [lindex $vec 2]
+
 	switch $cmd {
 		LS {
 			putlog "Server offers caps: $caps"
 			set wanted {}
 			foreach cap $caps {
 				if {[lsearch -exact ${caps-wanted} $cap] != -1} {
+					lappend wanted $cap
+				} elseif {$cap == "sasl" && ${sasl-user} != ""} {
 					lappend wanted $cap
 				}
 			}
