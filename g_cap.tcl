@@ -149,6 +149,9 @@ proc sasl:step:PLAIN {data} {
 	if {$data == "+"} {
 		set out [join [list ${sasl-user} ${sasl-user} ${sasl-pass}] "\0"]
 		putnow "AUTHENTICATE [b64:encode $out]"
+	} else {
+		putlog "SASL PLAIN: Unexpected input, aborting"
+		putnow "AUTHENTICATE *"
 	}
 }
 
