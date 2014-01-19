@@ -197,8 +197,8 @@ proc sasl:start {mech} {
 }
 
 proc sasl:step {data} {
-	global sasl-step
 	global sasl-mech
+	global sasl-step
 
 	if {${sasl-step} == 0} {
 		putnow "AUTHENTICATE ${sasl-mech}"
