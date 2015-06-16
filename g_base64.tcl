@@ -1,5 +1,6 @@
 # g_base64.tcl - Base64 encoding/decoding routines
-# (c) 2013 <grawity@gmail.com>, under WTFPL v2 <http://sam.zoy.org/wtfpl>
+# (c) 2013 Mantas Mikulėnas <grawity@gmail.com>
+# Released under the MIT Expat License.
 
 if {![catch {package require Tcl 8.6}]} {
 	proc b64:encode {input} {

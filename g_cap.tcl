@@ -1,5 +1,6 @@
 # g_cap.tcl - IRCv3 capability negotiation and SASL support
-# (c) 2013 <grawity@gmail.com>, under WTFPL v2 <http://sam.zoy.org/wtfpl>
+# (c) 2013-2015 Mantas Mikulėnas <grawity@gmail.com>
+# Released under the MIT Expat License.
 #
 # Requires: g_base64.tcl
 

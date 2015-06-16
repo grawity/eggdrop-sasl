@@ -1,5 +1,6 @@
 # g_ircv3.tcl - Experimental IRCv3 extension support
-# (c) 2013 <grawity@gmail.com>, under WTFPL v2 <http://sam.zoy.org/wtfpl>
+# (c) 2013 Mantas Mikulėnas <grawity@gmail.com>
+# Released under the MIT Expat License.
 #
 # Requires: g_cap.tcl
 

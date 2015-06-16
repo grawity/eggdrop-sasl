@@ -1,7 +1,12 @@
 # g_atheme_need.tcl - handles "need op/unban/invite/key" events with Atheme
-# (c) 2011 <grawity@gmail.com>, under WTFPL v2 <http://sam.zoy.org/wtfpl>
+# (c) 2011 Mantas Mikulėnas <grawity@gmail.com>
+# Released under the MIT Expat License.
 
-# NOTE: You must add a "services" user, then .chattr services +fS
+## Configuration
+#
+# 0) Load this script
+# 1) Add a "services" user with ChanServ's hostmask
+# 2) .chattr services +fS
 
 proc need:op {channel type} {
 	putlog "($channel) requesting reop"
