@@ -30,6 +30,6 @@
     Otherwise the bot can think it's being notice-flooded by ChanServ and ignore it.
 
 [eggcvs]: http://www.eggheads.org/devel/
-[egggit]: https://github.com/eggheads/eggdrop-1.8
-[commit]: https://github.com/eggheads/eggdrop-1.8/commit/343f08e224d53ebe53e7708d2f3c3f59c646d0c9
+[egggit]: https://github.com/eggheads/eggdrop
+[commit]: https://github.com/eggheads/eggdrop/commit/4847a9efbcaf260f1336ac735a785dd643714e62
 [patch]: https://gist.github.com/grawity/4455067/eb63e5e1764df2a4d9979fbdb52554e698da3ce1#file-preinit-server-patch
