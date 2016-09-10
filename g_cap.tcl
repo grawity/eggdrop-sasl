@@ -1,5 +1,5 @@
 # g_cap.tcl - IRCv3 capability negotiation and SASL support
-# (c) 2013-2015 Mantas Mikulėnas <grawity@gmail.com>
+# (c) 2013-2016 Mantas Mikulėnas <grawity@gmail.com>
 # Released under the MIT Expat License.
 #
 # Requires: g_base64.tcl
@@ -235,6 +235,8 @@ proc sasl:panic {msg} {
 		putnow "CAP END"
 	}
 }
+
+## SASL mechanism implementations
 
 proc sasl:step:PLAIN {step data} {
 	global sasl-user
