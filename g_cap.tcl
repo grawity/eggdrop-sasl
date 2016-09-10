@@ -88,9 +88,10 @@ proc raw:CAP {from keyword rest} {
 			foreach cap $caps {
 				if {[lsearch -exact ${caps-wanted} $cap] != -1} {
 					lappend wanted $cap
-				} elseif {$cap == "sasl" && ${sasl-user} != ""} {
-					lappend wanted $cap
 				}
+			}
+			if {${sasl-user} != ""} {
+				lappend wanted "sasl"
 			}
 			if {[llength $wanted]} {
 				set wanted [join $wanted " "]
