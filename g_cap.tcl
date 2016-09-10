@@ -15,6 +15,9 @@ set sasl-user "$username"
 # password for PLAIN
 set sasl-pass "hunter2"
 
+# disconnect on failure?
+set sasl-disconnect-on-fail 1
+
 # extra capabilities to ask for
 set caps-wanted {multi-prefix}
 
@@ -132,14 +135,19 @@ proc numeric:sasl-success {from keyword rest} {
 }
 
 proc numeric:sasl-failed {from keyword rest} {
+	global sasl-disconnect-on-fail
+
 	set mech [sasl:get-next-mech]
-	if {$mech == "*"} {
+	if {$mech != "*"} {
+		putlog "Authentication failed, trying next mechanism"
+		sasl:start $mech
+	} elseif {${sasl-disconnect-on-fail} == 1} {
 		putlog "Authentication failed, disconnecting"
 		putnow "QUIT"
 		putnow "CAP END"
 	} else {
-		putlog "Authentication failed, trying next mechanism"
-		sasl:start $mech
+		putlog "Authentication failed, continuing anyway"
+		putnow "CAP END"
 	}
 	return 1
 }
