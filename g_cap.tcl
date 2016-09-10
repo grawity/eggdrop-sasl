@@ -85,17 +85,12 @@ proc raw:CAP {from keyword rest} {
 		LS {
 			putlog "Server offers caps: $caps"
 			set wanted {}
-			set found-sasl 0
 			foreach cap $caps {
 				if {[lsearch -exact ${caps-wanted} $cap] != -1} {
 					lappend wanted $cap
 				} elseif {$cap == "sasl" && ${sasl-user} != ""} {
 					lappend wanted $cap
-					set found-sasl 1
 				}
-			}
-			if {${sasl-user} != "" && ${found-sasl} != 1} {
-				sasl:panic "Server did not offer SASL support" 0
 			}
 			if {[llength $wanted]} {
 				set wanted [join $wanted " "]
@@ -227,17 +222,15 @@ proc sasl:step {data} {
 	set sasl-step [expr ${sasl-step} + 1]
 }
 
-proc sasl:panic {msg {cap-end 1}} {
+proc sasl:panic {msg} {
 	global sasl-disconnect-on-fail
 
 	if {${sasl-disconnect-on-fail} == 1} {
 		putlog "$msg, disconnecting"
 		putnow "QUIT"
+		putnow "CAP END"
 	} else {
 		putlog "$msg, continuing anyway"
-	}
-
-	if {${cap-end} == 1} {
 		putnow "CAP END"
 	}
 }
