@@ -251,12 +251,8 @@ proc sasl:step:ECDSA-NIST256P-CHALLENGE {step data} {
 		return "*"
 	}
 
-	if {$step == 1} {
-		if {$data == "+"} {
-			return [b64:encode ${sasl-user}]
-		} else {
-			return "*"
-		}
+	if {$step == 1 && $data == "+"} {
+		return [b64:encode ${sasl-user}]
 	} elseif {$step == 2} {
 		return [exec ecdsatool sign ${sasl-ecdsa-key} $data]
 	} else {
