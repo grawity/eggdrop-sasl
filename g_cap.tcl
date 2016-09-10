@@ -110,7 +110,11 @@ proc raw:CAP {from keyword rest} {
 		}
 		NAK {
 			putlog "Server rejected caps: $caps"
-			putnow "CAP END"
+			if {[lsearch -exact $caps "sasl"] != -1} {
+				sasl:panic "Server refused SASL support"
+			} else {
+				putnow "CAP END"
+			}
 		}
 	}
 	return 1
@@ -135,19 +139,12 @@ proc numeric:sasl-success {from keyword rest} {
 }
 
 proc numeric:sasl-failed {from keyword rest} {
-	global sasl-disconnect-on-fail
-
 	set mech [sasl:get-next-mech]
 	if {$mech != "*"} {
 		putlog "Authentication failed, trying next mechanism"
 		sasl:start $mech
-	} elseif {${sasl-disconnect-on-fail} == 1} {
-		putlog "Authentication failed, disconnecting"
-		putnow "QUIT"
-		putnow "CAP END"
 	} else {
-		putlog "Authentication failed, continuing anyway"
-		putnow "CAP END"
+		sasl:panic "Authentication failed"
 	}
 	return 1
 }
@@ -223,6 +220,19 @@ proc sasl:step {data} {
 		}
 	}
 	set sasl-step [expr ${sasl-step} + 1]
+}
+
+proc sasl:panic {msg} {
+	global sasl-disconnect-on-fail
+
+	if {${sasl-disconnect-on-fail} == 1} {
+		putlog "$msg, disconnecting"
+		putnow "QUIT"
+		putnow "CAP END"
+	} else {
+		putlog "$msg, continuing anyway"
+		putnow "CAP END"
+	}
 }
 
 proc sasl:step:PLAIN {step data} {
