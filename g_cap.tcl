@@ -191,7 +191,7 @@ proc sasl:start {mech} {
 	global sasl-step
 
 	if {[info procs sasl:step:$mech] == ""} {
-		putlog "Mechanism $mech is not supported by this script!"
+		putlog "ERROR: Mechanism '$mech' is not supported by this script!"
 		putnow "AUTHENTICATE *"
 		return
 	}
