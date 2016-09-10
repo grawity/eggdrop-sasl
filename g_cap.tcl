@@ -6,7 +6,7 @@
 
 ## Configuration -- set these in your eggdrop.conf
 
-# available mechs: EXTERNAL, ECDSA-NIST256P-CHALLENGE, PLAIN
+# available mechs: EXTERNAL, PLAIN
 set sasl-use-mechs {PLAIN}
 
 # services username
@@ -14,9 +14,6 @@ set sasl-user "$username"
 
 # password for PLAIN
 set sasl-pass "hunter2"
-
-# private key for ECDSA-NIST256P-CHALLENGE
-set sasl-ecdsa-key "data/$username.eckey"
 
 # extra capabilities to ask for
 set caps-wanted {multi-prefix}
@@ -237,24 +234,6 @@ proc sasl:step:EXTERNAL {step data} {
 
 	if {$step == 1 && $data == "+"} {
 		return [b64:encode ${sasl-user}]
-	} else {
-		return "*"
-	}
-}
-
-proc sasl:step:ECDSA-NIST256P-CHALLENGE {step data} {
-	global sasl-user
-	global sasl-ecdsa-key
-
-	if {![file exists ${sasl-ecdsa-key}]} {
-		putlog "Error: \${sasl-ecdsa-key} must point to a private key."
-		return "*"
-	}
-
-	if {$step == 1 && $data == "+"} {
-		return [b64:encode ${sasl-user}]
-	} elseif {$step == 2} {
-		return [exec ecdsatool sign ${sasl-ecdsa-key} $data]
 	} else {
 		return "*"
 	}
