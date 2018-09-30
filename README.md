@@ -12,11 +12,11 @@
     source "scripts/4455067/g_base64.tcl"
     source "scripts/4455067/g_cap.tcl"
 
-    set sasl-user $username
+    set sasl-user "NoobBot"
     set sasl-pass "blahblah"
     ```
 
-(For those who still need it, the [old patch][patch] is still there.)
+(For those who still need it, the [patch for 1.6.x][patch] is still there.)
 
 ## Atheme auto-reop script:
 
