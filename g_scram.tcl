@@ -1,3 +1,9 @@
+# g_scram.tcl - SASL SCRAM-SHA-1/SHA-256 mechanism
+# (c) 2019 Mantas Mikulėnas <grawity@gmail.com>
+# Released under the MIT Expat License.
+#
+# Requires: g_pbkdf2.tcl, g_cap.tcl
+
 package require Tcl 8.2
 package require sha1
 package require sha256
@@ -103,7 +109,6 @@ proc scram:step {step data algo} {
 			set clientKey [b64:decode $pKvps(C)]
 			set serverKey [b64:decode $pKvps(S)]
 		} else {
-			putlog "SCRAM: sasl-pass is not a stored key, looking for salted hash..."
 			if {[string range ${sasl-pass} 0 6] == "pbkdf2:"} {
 				set passTmp [string range ${sasl-pass} 7 [string length ${sasl-pass}]]
 				array set pKvps [scram:kvparse $passTmp] 

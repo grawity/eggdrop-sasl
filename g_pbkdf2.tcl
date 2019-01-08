@@ -1,5 +1,10 @@
-# Based on source code at <https://wiki.tcl-lang.org/page/PBKDF2>, which is
-# believed to be public domain.
+# g_pbkdf2.tcl - PBKDF2-SHA1/SHA256 routine
+# (c) 2019 Mantas Mikulėnas <grawity@gmail.com>
+# Released under the MIT Expat License.
+#
+# Based on source code at <https://wiki.tcl-lang.org/page/PBKDF2>
+#
+# Requires: tcllib
 #
 # Note: Will be very slow (~1500 iterations per second per block), unless
 # tcltrf, cryptkit, or critcl are installed.
