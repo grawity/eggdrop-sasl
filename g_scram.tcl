@@ -1,5 +1,6 @@
 package require Tcl 8.2
 package require sha1
+package require sha256
 
 if {[namespace exists ::pbkdf2] == ""} {
 	die "You must load g_pbkdf2.tcl first."
@@ -39,10 +40,21 @@ proc scram:upgrade-config {pass} {
 	putlog "You should set sasl-pass to: \"$pass\""
 }
 
-proc sasl:step:SCRAM-SHA-1 {step data} {
+proc scram:step {step data algo} {
 	global sasl-user
 	global sasl-pass
 	global scram-state
+
+	if {$algo == "sha1"} {
+		set dfunc ::sha1::sha1
+		set mfunc ::sha1::hmac
+	} elseif {$algo == "sha256"} {
+		set dfunc ::sha2::sha256
+		set mfunc ::sha2::hmac
+	} else {
+		putlog "ERROR: unknown algorithm '$algo'"
+		return "*"
+	}
 
 	if {$step == 1 && $data == "+"} {
 		set cNonce [scram:mknonce 32]
@@ -84,9 +96,8 @@ proc sasl:step:SCRAM-SHA-1 {step data} {
 		if {[string range ${sasl-pass} 0 5] == "scram:"} {
 			set passTmp [string range ${sasl-pass} 6 [string length ${sasl-pass}]]
 			array set pKvps [scram:kvparse $passTmp] 
-			if {$pKvps(s) != $sKvps(s) || $pKvps(i) != $sKvps(i)} {
-			# TODO: also check algo
-				putlog "ERROR: sasl-pass wrong, salt and/or iteration count mismatch"
+			if {$pKvps(a) != $algo || $pKvps(s) != $sKvps(s) || $pKvps(i) != $sKvps(i)} {
+				putlog "ERROR: sasl-pass wrong -- algorithm, salt, and/or iteration count mismatch"
 				return "*"
 			}
 			set clientKey [b64:decode $pKvps(C)]
@@ -96,9 +107,8 @@ proc sasl:step:SCRAM-SHA-1 {step data} {
 			if {[string range ${sasl-pass} 0 6] == "pbkdf2:"} {
 				set passTmp [string range ${sasl-pass} 7 [string length ${sasl-pass}]]
 				array set pKvps [scram:kvparse $passTmp] 
-				if {$pKvps(s) != $sKvps(s) || $pKvps(i) != $sKvps(i)} {
-				# TODO: also check algo
-					putlog "ERROR: sasl-pass wrong, salt and/or iteration count mismatch"
+				if {$pKvps(a) != $algo || $pKvps(s) != $sKvps(s) || $pKvps(i) != $sKvps(i)} {
+					putlog "ERROR: sasl-pass wrong -- algorithm, salt, and/or iteration count mismatch"
 					return "*"
 				}
 				set saltedPassword [b64:decode $pKvps(h)]
@@ -113,23 +123,23 @@ proc sasl:step:SCRAM-SHA-1 {step data} {
 				if {$sIter > 2000} {
 					putlog "This will take a minute or two. The server will probably kick you off."
 				}
-				set saltedPassword [::pbkdf2::pbkdf2 sha1 ${sasl-pass} $sSalt $sIter]
+				set saltedPassword [::pbkdf2::pbkdf2 $algo ${sasl-pass} $sSalt $sIter]
 				# Tell operator to store the new value
-				set sasl-pass "pbkdf2:s=${sKvps(s)},i=${sKvps(i)},h=[b64:encode $saltedPassword]"
+				set sasl-pass "pbkdf2:a=$algo,s=${sKvps(s)},i=${sKvps(i)},h=[b64:encode $saltedPassword]"
 				scram:upgrade-config ${sasl-pass}
 			}
-			set clientKey [::sha1::hmac -bin -key $saltedPassword -- "Client Key"]
-			set serverKey [::sha1::hmac -bin -key $saltedPassword -- "Server Key"]
+			set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
+			set serverKey [$mfunc -bin -key $saltedPassword -- "Server Key"]
 			# Tell operator to store the new value
-			set sasl-pass "scram:s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
+			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
 			scram:upgrade-config ${sasl-pass}
 		}
 		set cInitMsg ${scram-state(cInitMsg)}
 		set cFinalMsgBare "c=biws,r=${sNonce}"
 		set authMsg "$cInitMsg,$sFirstMsg,$cFinalMsgBare"
-		set storedKey [::sha1::sha1 -bin -- $clientKey]
-		set clientSig [::sha1::hmac -bin -key $storedKey -- $authMsg]
-		set serverSig [::sha1::hmac -bin -key $serverKey -- $authMsg]
+		set storedKey [$dfunc -bin -- $clientKey]
+		set clientSig [$mfunc -bin -key $storedKey -- $authMsg]
+		set serverSig [$mfunc -bin -key $serverKey -- $authMsg]
 		set scram-state(serverSig) $serverSig
 		set clientProof [scram:xorbuf $clientKey $clientSig]
 		set cFinalMsg "$cFinalMsgBare,p=[b64:encode $clientProof]"
@@ -157,4 +167,12 @@ proc sasl:step:SCRAM-SHA-1 {step data} {
 	} else {
 		return "*"
 	}
+}
+
+proc sasl:step:SCRAM-SHA-1 {step data} {
+	return [scram:step $step $data sha1]
+}
+
+proc sasl:step:SCRAM-SHA-256 {step data} {
+	return [scram:step $step $data sha256]
 }
