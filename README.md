@@ -1,6 +1,6 @@
 ## Eggdrop 1.8 SASL script:
 
- 0. For convenience, download this entire gist with `git clone https://gist.github.com/4455067.git`
+ 0. For convenience, download this entire repository with `git clone https://github.com/grawity/eggdrop-sasl`
 
  1. Get Eggdrop 1.8 [from Git][egggit] or [from CVS][eggcvs]. Compile and install.
  
@@ -9,8 +9,8 @@
  2. From your Eggdrop config, `source` the scripts and set the SASL information.
 
     ```tcl
-    source "scripts/4455067/g_base64.tcl"
-    source "scripts/4455067/g_cap.tcl"
+    source "scripts/eggdrop-sasl/g_base64.tcl"
+    source "scripts/eggdrop-sasl/g_cap.tcl"
 
     set sasl-user "NoobBot"
     set sasl-pass "blahblah"
@@ -32,4 +32,4 @@
 [eggcvs]: http://www.eggheads.org/devel/
 [egggit]: https://github.com/eggheads/eggdrop
 [commit]: https://github.com/eggheads/eggdrop/commit/4847a9efbcaf260f1336ac735a785dd643714e62
-[patch]: https://gist.github.com/grawity/4455067/eb63e5e1764df2a4d9979fbdb52554e698da3ce1#file-preinit-server-patch
+[patch]: https://github.com/grawity/eggdrop-sasl/blob/eb63e5e1764df2a4d9979fbdb52554e698da3ce1/preinit-server.patch
