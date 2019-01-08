@@ -15,8 +15,10 @@ namespace eval ::pbkdf2 {
 proc ::pbkdf2::pbkdf2 {algo password salt count {dklen 0}} {
 	if {$algo == "sha1"} {
 		set hashbytes 20
+		set mfunc ::sha1::hmac
 	} elseif {$algo == "sha256"} {
 		set hashbytes 32
+		set mfunc ::sha2::hmac
 	} else {
 		error "unknown hash algorithm '$algo'"
 	}
@@ -29,10 +31,10 @@ proc ::pbkdf2::pbkdf2 {algo password salt count {dklen 0}} {
 	set dkn [expr {int(ceil(double($dklen)/$hashbytes))}]
 	set dkl [list]
 	for {set i 1} {$i <= $dkn} {incr i} {
-		set xsalt [::${algo}::hmac -bin -key $password "$salt[binary format I $i]"]
+		set xsalt [$mfunc -bin -key $password "$salt[binary format I $i]"]
 		binary scan $xsalt Iu* xbuf
 		for {set j 1} {$j < $count} {incr j} {
-			set xsalt [::${algo}::hmac -bin -key $password $xsalt]
+			set xsalt [$mfunc -bin -key $password $xsalt]
 			binary scan $xsalt Iu* ybuf
 			set xbuf [lmap x $xbuf y $ybuf {expr {$x ^ $y}}]
 		}
