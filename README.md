@@ -3,7 +3,7 @@
  0. For convenience, download this entire repository with `git clone https://github.com/grawity/eggdrop-sasl`
 
  1. Get Eggdrop 1.8 [from Git][egggit] or [from CVS][eggcvs]. Compile and install.
- 
+
     The `preinit-server` patch was [merged into Eggdrop 1.8][commit] recently, so you do not need to patch it manually anymore.
 
  2. From your Eggdrop config, `source` the scripts and set the SASL information.
@@ -31,7 +31,11 @@
 
  4. Connect to the server. Note that PBKDF2-SHA is *very slow* in Tcl, and the first connection attempt may time out. Wait for Eggdrop to retry; the second attempt should work fine.
 
- 5. To improve security, you can remove the plaintext password from your _eggdrop.conf_ and replace it with a hash. The script will automatically show the recommended hash to put in the `sasl-pass` field.
+ 5. To improve security and to avoid the initial connection delay, you should remove the plaintext password from your _eggdrop.conf_ and replace it with the PBKDFv2 hash. The script will automatically show the recommended hash to put in the `sasl-pass` field.
+
+    ```tcl
+    set sasl-pass "pbkdf2:a=sha256,s=<etc>,i=<etc>,H=<etc>"
+    ```
 
 ## Atheme auto-reop script:
 
