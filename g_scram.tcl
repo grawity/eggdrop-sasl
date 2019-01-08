@@ -111,7 +111,7 @@ proc scram:step {step data algo} {
 					putlog "ERROR: sasl-pass wrong -- algorithm, salt, and/or iteration count mismatch"
 					return "*"
 				}
-				set saltedPassword [b64:decode $pKvps(h)]
+				set saltedPassword [b64:decode $pKvps(H)]
 			} else {
 				set sSalt [b64:decode $sKvps(s)]
 				set sIter $sKvps(i)
@@ -125,7 +125,7 @@ proc scram:step {step data algo} {
 				}
 				set saltedPassword [::pbkdf2::pbkdf2 $algo ${sasl-pass} $sSalt $sIter]
 				# Tell operator to store the new value
-				set sasl-pass "pbkdf2:a=$algo,s=${sKvps(s)},i=${sKvps(i)},h=[b64:encode $saltedPassword]"
+				set sasl-pass "pbkdf2:a=$algo,s=${sKvps(s)},i=${sKvps(i)},H=[b64:encode $saltedPassword]"
 				scram:upgrade-config ${sasl-pass}
 			}
 			set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
