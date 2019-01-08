@@ -18,6 +18,19 @@
 
 (For those who still need it, the [patch for 1.6.x][patch] is still there.)
 
+### SCRAM-SHA support
+
+ 3. To enable support for SCRAM-SHA-1 or SCRAM-SHA-256, load two additional scripts:
+
+    ```tcl
+    source "scripts/eggdrop-sasl/g_pbkdf2.tcl"
+    source "scripts/eggdrop-sasl/g_scram.tcl"
+    ```
+
+ 4. Connect to the server. Note that PBKDF2-SHA is *very slow* in Tcl, and the first connection attempt may time out. Wait for Eggdrop to retry; the second attempt should work fine.
+
+ 5. To improve security, you can remove the plaintext password from your _eggdrop.conf_ and replace it with a hash. The script will automatically show the recommended hash to put in the `sasl-pass` field.
+
 ## Atheme auto-reop script:
 
  1. From your Eggdrop config, `source` the **g_atheme_need.tcl** script.
