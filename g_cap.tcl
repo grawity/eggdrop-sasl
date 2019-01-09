@@ -6,19 +6,24 @@
 
 ## Configuration -- set these in your eggdrop.conf
 
-# available mechs: EXTERNAL, PLAIN
-set sasl-use-mechs {PLAIN}
+# Mechanism to use. (This may be a space-separated list of mechanisms to try.)
+# Available mechs:
+#  EXTERNAL      (built-in)
+#  PLAIN         (built-in)
+#  SCRAM-SHA-1   (g_scram.tcl)
+#  SCRAM-SHA-256 (g_scram.tcl)
+set sasl-use-mechs "PLAIN"
 
-# services username
-set sasl-user "$username"
+# Services username:
+set sasl-user "NoobBot"
 
-# password for PLAIN
+# Password for PLAIN and SCRAM-SHA:
 set sasl-pass "hunter2"
 
-# disconnect on failure?
+# Disconnect on failure?
 set sasl-disconnect-on-fail 1
 
-# extra capabilities to ask for
+# Optional extra capabilities to ask for
 set caps-wanted {multi-prefix}
 
 ## Internal state -- do not edit anything below
