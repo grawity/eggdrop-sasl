@@ -12,7 +12,7 @@
 #  PLAIN         (built-in)
 #  SCRAM-SHA-1   (g_scram.tcl)
 #  SCRAM-SHA-256 (g_scram.tcl)
-set sasl-use-mechs "PLAIN"
+set sasl-mechanism "PLAIN"
 
 # Services username:
 set sasl-user "NoobBot"
@@ -165,23 +165,33 @@ proc numeric:sasl-mechlist {from keyword rest} {
 
 ## SASL mechanism functions
 
-proc sasl:get-first-mech {} {
+proc sasl:init-compat-vars {} {
+	# backward-compatibility with older, uglier setting name
+	global sasl-mechanism
 	global sasl-use-mechs
+	if {[info exists sasl-use-mechs]} {
+		set sasl-mechanism ${sasl-use-mechs}
+	}
+}
+
+proc sasl:get-first-mech {} {
+	global sasl-mechanism
 	global sasl-mechs
 	global sasl-midx
 
-	set sasl-mechs ${sasl-use-mechs}
+	sasl:init-compat-vars
+	set sasl-mechs ${sasl-mechanism}
 	set sasl-midx 0
-	return [lindex ${sasl-use-mechs} 0]
+	return [lindex ${sasl-mechanism} 0]
 }
 
 proc sasl:get-next-mech {} {
-	global sasl-use-mechs
+	global sasl-mechanism
 	global sasl-mechs
 	global sasl-midx
 
-	while {[incr sasl-midx] < [llength ${sasl-use-mechs}]} {
-		set mech [lindex ${sasl-use-mechs} ${sasl-midx}]
+	while {[incr sasl-midx] < [llength ${sasl-mechanism}]} {
+		set mech [lindex ${sasl-mechanism} ${sasl-midx}]
 		if {[lsearch -exact ${sasl-mechs} $mech] != -1} {
 			return $mech
 		}

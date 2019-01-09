@@ -26,7 +26,7 @@
     source "scripts/eggdrop-sasl/g_pbkdf2.tcl"
     source "scripts/eggdrop-sasl/g_scram.tcl"
 
-    set sasl-use-mechs {SCRAM-SHA-256}
+    set sasl-mechanism "SCRAM-SHA-256"
     ```
 
  4. Connect to the server. Note that PBKDF2-SHA is *very slow* in Tcl, and the first connection attempt may time out. Wait for Eggdrop to retry; the second attempt should work fine.
