@@ -81,19 +81,19 @@ proc scram:step {step data algo} {
 			putlog "ERROR: could not parse SCRAM message '${data}'"
 			return "*"
 		}
-		if {$sKvps(m) != ""} {
+		if {[info exists sKvps(m)]} {
 			putlog "ERROR: unsupported extension attribute in SCRAM challenge"
 			return "*"
 		}
-		if {$sKvps(i) == ""} {
+		if {![info exists sKvps(i)] || $sKvps(i) == ""} {
 			putlog "ERROR: iteration count missing from SCRAM challenge"
 			return "*"
 		}
-		if {$sKvps(r) == ""} {
+		if {![info exists sKvps(r)] || $sKvps(r) == ""} {
 			putlog "ERROR: server nonce missing from SCRAM challenge"
 			return "*"
 		}
-		if {$sKvps(s) == ""} {
+		if {![info exists sKvps(s)] || $sKvps(s) == ""} {
 			putlog "ERROR: salt missing from SCRAM challenge"
 			return "*"
 		}
@@ -165,11 +165,11 @@ proc scram:step {step data algo} {
 			putlog "ERROR: could not parse SCRAM message '${data}'"
 			return "*"
 		}
-		if {$sKvps(m) != ""} {
+		if {[info exists sKvps(m)]} {
 			putlog "ERROR: unsupported extension attribute in SCRAM challenge"
 			return "*"
 		}
-		if {$sKvps(v) == ""} {
+		if {![info exists sKvps(v)] || $sKvps(v) == ""} {
 			putlog "ERROR: server verifier missing from challenge"
 			return "*"
 		}
