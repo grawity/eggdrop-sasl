@@ -67,13 +67,15 @@ proc scram:step {step data algo} {
 	}
 
 	if {$step == 1 && $data == "+"} {
+		set cGs2Header "n,,"
 		set cNonce [scram:mknonce 32]
 		# optional: a=${sasl-authzid}
 		set cInitMsg "n=[scram:escape ${sasl-user}],r=${cNonce}"
 		array unset scram-state *
+		set scram-state(cGs2Header) $cGs2Header
 		set scram-state(cNonce) $cNonce
 		set scram-state(cInitMsg) $cInitMsg
-		return [b64:encode "n,,${cInitMsg}"]
+		return [b64:encode "${cGs2Header}${cInitMsg}"]
 	} elseif {$step == 2 && $data != "+"} {
 		set sFirstMsg [b64:decode $data]
 		array set sKvps [scram:kvparse $sFirstMsg]
@@ -148,8 +150,9 @@ proc scram:step {step data algo} {
 			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
 			scram:upgrade-config ${sasl-pass}
 		}
+		set cGs2Header ${scram-state(cGs2Header)}
 		set cInitMsg ${scram-state(cInitMsg)}
-		set cFinalMsgBare "c=biws,r=${sNonce}"
+		set cFinalMsgBare "c=[b64:encode $cGs2Header],r=${sNonce}"
 		set authMsg "$cInitMsg,$sFirstMsg,$cFinalMsgBare"
 		set storedKey [$dfunc -bin -- $clientKey]
 		set clientSig [$mfunc -bin -key $storedKey -- $authMsg]
