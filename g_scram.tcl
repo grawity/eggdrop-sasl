@@ -12,6 +12,10 @@ if {[namespace exists ::pbkdf2] == ""} {
 	die "You must load g_pbkdf2.tcl first."
 }
 
+proc scram:escape {str} {
+	return [string map {= =3D , =2C} $str]
+}
+
 proc scram:mknonce {length} {
 	set fp [open /dev/urandom r]
 	fconfigure $fp -translation binary
@@ -64,7 +68,8 @@ proc scram:step {step data algo} {
 
 	if {$step == 1 && $data == "+"} {
 		set cNonce [scram:mknonce 32]
-		set cInitMsg "n=${sasl-user},r=${cNonce}"
+		# optional: a=${sasl-authzid}
+		set cInitMsg "n=[scram:escape ${sasl-user}],r=${cNonce}"
 		array unset scram-state *
 		set scram-state(cNonce) $cNonce
 		set scram-state(cInitMsg) $cInitMsg
