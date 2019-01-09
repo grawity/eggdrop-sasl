@@ -135,6 +135,10 @@ proc scram:step {step data algo} {
 					putlog "ERROR: server provided invalid salt in SCRAM challenge"
 					return "*"
 				}
+				if {![string is integer $sIter] || $sIter < 500} {
+					putlog "ERROR: server provided invalid iteration count in SCRAM challenge"
+					return "*"
+				}
 				putlog "SCRAM: Plaintext password found in 'sasl-pass'. Calculating PBKDF2 ($sIter iterations)..."
 				if {$sIter > 2000} {
 					putlog "This will take a minute or two. The server will probably kick you off."
