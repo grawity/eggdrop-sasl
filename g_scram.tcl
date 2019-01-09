@@ -157,9 +157,9 @@ proc scram:step {step data algo} {
 		set storedKey [$dfunc -bin -- $clientKey]
 		set clientSig [$mfunc -bin -key $storedKey -- $authMsg]
 		set serverSig [$mfunc -bin -key $serverKey -- $authMsg]
-		set scram-state(serverSig) $serverSig
 		set clientProof [scram:xorbuf $clientKey $clientSig]
 		set cFinalMsg "$cFinalMsgBare,p=[b64:encode $clientProof]"
+		set scram-state(serverSig) $serverSig
 		return [b64:encode $cFinalMsg]
 	} elseif {$step == 3 && $data != "+"} {
 		set sFinalMsg [b64:decode $data]
