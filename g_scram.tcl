@@ -29,7 +29,7 @@ proc scram:kvparse {string} {
 	array set kvps {}
 	foreach word $tmp {
 		if {[regexp {^([A-Za-z])=(.*)$} $word _ k v]} {
-			set kvps($k) $v
+			set kvps($k) [string map {=2C , =3D =} $v]
 		} else {
 			return
 		}
