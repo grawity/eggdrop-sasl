@@ -49,6 +49,17 @@ proc scram:upgrade-config {pass} {
 
 	global sasl-pass
 	set sasl-pass $pass
+
+	global config
+	catch {
+		putlog "SCRAM: Automatically storing password hash in $config"
+		set map {\" \\\" \{ \\\{ \} \\\} $ \\$ [ \\[ ] \\] \\ \\\\}
+		set fh [open $config a]
+		puts $fh ""
+		puts $fh "# Automatically added by g_scram.tcl"
+		puts $fh "set sasl-pass \"[string map $map $pass]\""
+		close $fh
+	}
 }
 
 proc scram:step {step data algo} {
