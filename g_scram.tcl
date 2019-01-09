@@ -81,16 +81,16 @@ proc scram:step {step data algo} {
 			putlog "ERROR: could not parse SCRAM message '${data}'"
 			return "*"
 		}
+		if {$sKvps(i) == ""} {
+			putlog "ERROR: iteration count missing from SCRAM challenge"
+			return "*"
+		}
 		if {$sKvps(r) == ""} {
 			putlog "ERROR: server nonce missing from SCRAM challenge"
 			return "*"
 		}
 		if {$sKvps(s) == ""} {
 			putlog "ERROR: salt missing from SCRAM challenge"
-			return "*"
-		}
-		if {$sKvps(i) == ""} {
-			putlog "ERROR: iteration count missing from SCRAM challenge"
 			return "*"
 		}
 		set sNonce $sKvps(r)
