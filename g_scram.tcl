@@ -168,6 +168,10 @@ proc scram:step {step data algo} {
 			putlog "ERROR: could not parse SCRAM message '${data}'"
 			return "*"
 		}
+		if {[info exists sKvps(e)]} {
+			putlog "ERROR: server returns authentication error '${sKvps(v)}'"
+			return "*"
+		}
 		if {[info exists sKvps(m)]} {
 			putlog "ERROR: unsupported extension attribute in SCRAM challenge"
 			return "*"
