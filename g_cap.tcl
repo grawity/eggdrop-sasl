@@ -220,7 +220,7 @@ proc sasl:step {data} {
 			putnow "AUTHENTICATE +"
 		}
 	}
-	set sasl-step [expr ${sasl-step} + 1]
+	incr sasl-step
 }
 
 proc sasl:panic {msg} {

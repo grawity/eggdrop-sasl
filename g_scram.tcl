@@ -45,9 +45,10 @@ proc scram:xorbuf {a b} {
 }
 
 proc scram:upgrade-config {pass} {
+	putlog "You should set sasl-pass to: \"$pass\""
+
 	global sasl-pass
 	set sasl-pass $pass
-	putlog "You should set sasl-pass to: \"$pass\""
 }
 
 proc scram:step {step data algo} {
@@ -150,9 +151,9 @@ proc scram:step {step data algo} {
 			}
 			set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
 			set serverKey [$mfunc -bin -key $saltedPassword -- "Server Key"]
-			# Tell operator to store the new value
+			# Tell operator to store the new value (...or don't)
 			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
-			scram:upgrade-config ${sasl-pass}
+			#scram:upgrade-config ${sasl-pass}
 		}
 		set cGs2Header ${scram-state(cGs2Header)}
 		set cInitMsg ${scram-state(cInitMsg)}
