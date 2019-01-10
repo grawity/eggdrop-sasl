@@ -46,10 +46,6 @@ proc scram:xorbuf {a b} {
 
 proc scram:upgrade-config {pass} {
 	putlog "You should set sasl-pass to: \"$pass\""
-
-	global sasl-pass
-	set sasl-pass $pass
-
 	global config
 	catch {
 		putlog "SCRAM: Automatically storing password hash in $config"
@@ -156,7 +152,7 @@ proc scram:step {step data algo} {
 			set saltedPassword [::pbkdf2::pbkdf2 $algo ${sasl-pass} $sSalt $sIter]
 			set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
 			set serverKey [$mfunc -bin -key $saltedPassword -- "Server Key"]
-			# Tell operator to store the new value
+			# Cache the value for subsequent reconnections
 			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},H=[b64:encode $saltedPassword]"
 			#set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
 			scram:upgrade-config ${sasl-pass}

@@ -31,10 +31,10 @@
 
  4. Connect to the server. Note that PBKDF2-SHA is *very slow* in Tcl, and the first connection attempt may time out. Wait for Eggdrop to retry; the second attempt should work fine.
 
- 5. To improve security and to avoid the initial connection delay, you should remove the plaintext password from your _eggdrop.conf_ and replace it with the PBKDFv2 hash. The script will automatically show the recommended hash to put in the `sasl-pass` field.
+ 5. To improve security and to avoid the initial connection delay, you should remove the plaintext password from your _eggdrop.conf_ and replace it with the PBKDFv2 hash using server-supplied parameters. The script will automatically show the recommended hash to put in the `sasl-pass` field.
 
     ```tcl
-    set sasl-pass "pbkdf2:a=sha256,s=<etc>,i=<etc>,H=<etc>"
+    set sasl-pass "scram:a=sha256,s=<etc>,i=<etc>,H=<etc>"
     ```
 
 ## Atheme auto-reop script:
