@@ -121,50 +121,47 @@ proc scram:step {step data algo} {
 			putlog "ERROR: server/client nonce prefix mismatch in SCRAM challenge"
 			return "*"
 		}
-		# parse password
+		# check whether we have the cached hash
 		if {[string range ${sasl-pass} 0 5] == "scram:"} {
 			set passTmp [string range ${sasl-pass} 6 [string length ${sasl-pass}]]
 			array set pKvps [scram:kvparse $passTmp] 
 			if {$pKvps(a) != $algo || $pKvps(s) != $sKvps(s) || $pKvps(i) != $sKvps(i)} {
-				putlog "ERROR: sasl-pass wrong -- algorithm, salt, and/or iteration count mismatch"
+				putlog "ERROR: sasl-pass is not for this server (algorithm, salt, and/or iteration count mismatch)"
 				return "*"
 			}
-			set clientKey [b64:decode $pKvps(C)]
-			set serverKey [b64:decode $pKvps(S)]
-		} else {
-			if {[string range ${sasl-pass} 0 6] == "pbkdf2:"} {
-				set passTmp [string range ${sasl-pass} 7 [string length ${sasl-pass}]]
-				array set pKvps [scram:kvparse $passTmp] 
-				if {$pKvps(a) != $algo || $pKvps(s) != $sKvps(s) || $pKvps(i) != $sKvps(i)} {
-					putlog "ERROR: sasl-pass wrong -- algorithm, salt, and/or iteration count mismatch"
-					return "*"
-				}
+			if {[info exists pKvps(C)] && [info exists pKvps(S)]} {
+				set clientKey [b64:decode $pKvps(C)]
+				set serverKey [b64:decode $pKvps(S)]
+			} elseif {[info exists pKvps(H)]} {
 				set saltedPassword [b64:decode $pKvps(H)]
+				set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
+				set serverKey [$mfunc -bin -key $saltedPassword -- "Server Key"]
 			} else {
-				set sSalt [b64:decode $sKvps(s)]
-				set sIter $sKvps(i)
-				if {$sSalt == ""} {
-					putlog "ERROR: server provided invalid salt in SCRAM challenge"
-					return "*"
-				}
-				if {![string is integer $sIter] || $sIter < 500 || $sIter > 65535} {
-					putlog "ERROR: server provided invalid iteration count in SCRAM challenge"
-					return "*"
-				}
-				putlog "SCRAM: Plaintext password found in 'sasl-pass'. Calculating PBKDF2 ($sIter iterations)..."
-				if {$sIter > 2000} {
-					putlog "This will take a minute or two. The server will probably kick you off."
-				}
-				set saltedPassword [::pbkdf2::pbkdf2 $algo ${sasl-pass} $sSalt $sIter]
-				# Tell operator to store the new value
-				set sasl-pass "pbkdf2:a=$algo,s=${sKvps(s)},i=${sKvps(i)},H=[b64:encode $saltedPassword]"
-				scram:upgrade-config ${sasl-pass}
+				putlog "ERROR: sasl-pass is missing required attributes"
+				return "*"
 			}
+		} else {
+			set sSalt [b64:decode $sKvps(s)]
+			set sIter $sKvps(i)
+			if {$sSalt == ""} {
+				putlog "ERROR: server provided invalid salt in SCRAM challenge"
+				return "*"
+			}
+			if {![string is integer $sIter] || $sIter < 500 || $sIter > 65535} {
+				putlog "ERROR: server provided invalid iteration count in SCRAM challenge"
+				return "*"
+			}
+			putlog "SCRAM: Plaintext password found in 'sasl-pass'. Calculating PBKDF2 ($sIter iterations)..."
+			if {$sIter > 2000} {
+				putlog "This will take a minute or two. The server will probably kick you off."
+			}
+			set saltedPassword [::pbkdf2::pbkdf2 $algo ${sasl-pass} $sSalt $sIter]
 			set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
 			set serverKey [$mfunc -bin -key $saltedPassword -- "Server Key"]
-			# Tell operator to store the new value (...or don't)
-			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
-			#scram:upgrade-config ${sasl-pass}
+			# Tell operator to store the new value
+			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},H=[b64:encode $saltedPassword]"
+			#set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
+			scram:upgrade-config ${sasl-pass}
 		}
 		set cGs2Header ${scram-state(cGs2Header)}
 		set cInitMsg ${scram-state(cInitMsg)}
