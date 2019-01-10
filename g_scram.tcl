@@ -122,7 +122,7 @@ proc scram:step {step data algo} {
 		}
 		# check whether we have the cached hash
 		if {[string range ${sasl-pass} 0 5] == "scram:"} {
-			set passTmp [string range ${sasl-pass} 6 [string length ${sasl-pass}]]
+			set passTmp [string range ${sasl-pass} 6 end]
 			array set pKvps [scram:kvparse $passTmp] 
 			if {$pKvps(a) != $algo || $pKvps(s) != $sKvps(s) || $pKvps(i) != $sKvps(i)} {
 				putlog "ERROR: sasl-pass is not for this server (algorithm, salt, and/or iteration count mismatch)"
