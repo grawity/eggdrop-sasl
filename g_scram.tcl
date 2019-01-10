@@ -12,6 +12,8 @@ if {[namespace exists ::pbkdf2] == ""} {
 	die "You must load g_pbkdf2.tcl first."
 }
 
+set sasl-scram-auto-upgrade 1
+
 proc scram:escape {str} {
 	return [string map {= =3D , =2C} $str]
 }
@@ -45,8 +47,10 @@ proc scram:xorbuf {a b} {
 }
 
 proc scram:upgrade-config {pass} {
-	putlog "SCRAM: You should now change sasl-pass to this token: \"$pass\""
 	global config
+	global sasl-scram-auto-upgrade
+	putlog "SCRAM: You should now change sasl-pass to this token: \"$pass\""
+	if {${sasl-scram-auto-upgrade} == 0} {return}
 	catch {
 		putlog "SCRAM: Automatically storing password hash in $config"
 		set map {\" \\\" \{ \\\{ \} \\\} $ \\$ [ \\[ ] \\] \\ \\\\}
