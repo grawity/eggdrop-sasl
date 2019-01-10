@@ -27,9 +27,8 @@ proc scram:mknonce {length} {
 }
 
 proc scram:kvparse {string} {
-	set tmp [split $string ","]
 	array set kvps {}
-	foreach word $tmp {
+	foreach word [split $string ","] {
 		if {[regexp {^([A-Za-z])=(.*)$} $word _ k v]} {
 			set kvps($k) [string map {=2C , =3D =} $v]
 		} else {
