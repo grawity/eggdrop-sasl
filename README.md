@@ -29,13 +29,26 @@
     set sasl-mechanism "SCRAM-SHA-256"
     ```
 
- 4. Connect to the server. Note that PBKDF2-SHA is *very slow* in Tcl, and the first connection attempt may time out. Wait for Eggdrop to retry; the second attempt should work fine.
+ 4. Connect to the server. Note that the first connection attempt will need to
+    generate the authentication token using PBKDFv2, which is *very slow* in
+    Tcl so the server may time out. Just wait for Eggdrop to retry, and the
+    second attempt should work fine.
 
- 5. To improve security and to avoid the initial connection delay, you should remove the plaintext password from your _eggdrop.conf_ and replace it with the PBKDFv2 hash using server-supplied parameters. The script will automatically show the recommended hash to put in the `sasl-pass` field.
+ 5. To improve security and to avoid the initial connection delay, you should
+    remove the plaintext password from your _eggdrop.conf_ and replace it with
+    the generated token.
+
+    You can find this token in your Eggdrop logs, or by running `.tcl set
+    sasl-pass` on the console after a successful connection. The token will
+    look like this:
 
     ```tcl
     set sasl-pass "scram:a=sha256,s=<etc>,i=<etc>,H=<etc>"
     ```
+
+    Note: The script will try to automatically add the token to your config,
+    (although it won't remove the plaintext password – you'll have to do that
+    manually).
 
 ## Atheme auto-reop script:
 

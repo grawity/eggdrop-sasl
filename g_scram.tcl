@@ -45,7 +45,7 @@ proc scram:xorbuf {a b} {
 }
 
 proc scram:upgrade-config {pass} {
-	putlog "You should set sasl-pass to: \"$pass\""
+	putlog "SCRAM: You should now change sasl-pass to this token: \"$pass\""
 	global config
 	catch {
 		putlog "SCRAM: Automatically storing password hash in $config"
