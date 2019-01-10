@@ -152,9 +152,7 @@ proc scram:step {step data algo} {
 				return "*"
 			}
 			putlog "SCRAM: Plaintext password found in 'sasl-pass'. Calculating PBKDF2 ($sIter iterations)..."
-			if {$sIter > 2000} {
-				putlog "This will take a minute or two. The server will probably kick you off."
-			}
+			putlog "This will take a minute or two. The server will probably kick you off."
 			set saltedPassword [::pbkdf2::pbkdf2 $algo ${sasl-pass} $sSalt $sIter]
 			set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
 			set serverKey [$mfunc -bin -key $saltedPassword -- "Server Key"]
