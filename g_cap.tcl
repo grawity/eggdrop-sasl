@@ -129,7 +129,8 @@ proc raw:CAP {from keyword rest} {
 ## Raw IRC-SASL commands
 
 proc raw:AUTHENTICATE {from keyword rest} {
-	sasl:step $rest
+	set vec [rparse $rest]
+	sasl:step [lindex $vec 0]
 	return 1
 }
 
