@@ -2,7 +2,7 @@
 
  0. For convenience, download this entire repository with `git clone https://github.com/grawity/eggdrop-sasl`
 
- 1. Get Eggdrop 1.8 [from Git][egggit] or [from CVS][eggcvs]. Compile and install.
+ 1. Get Eggdrop 1.8 [from Git][egggit]. Compile and install.
 
     The `preinit-server` patch was [merged into Eggdrop 1.8][commit] recently, so you do not need to patch it manually anymore.
 
