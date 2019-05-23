@@ -45,6 +45,7 @@ proc rparse {text} {
 	# split raw string with parameters of an IRC command into a list of parameters
 	# "foo :bar baz" => {foo {bar baz}}
 	# ":foo bar" => {{foo bar}}
+	set text [string trimleft $text " "]
 	if {[string index $text 0] == ":"} {
 		set vec [list [string range $text 1 end]]
 	} else {
