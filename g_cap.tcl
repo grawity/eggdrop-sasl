@@ -42,16 +42,19 @@ set sasl-step 0
 ## Utility functions
 
 proc rparse {text} {
+	# split raw string with parameters of an IRC command into a list of parameters
+	# "foo :bar baz" => {foo {bar baz}}
+	# ":foo bar" => {{foo bar}}
 	if {[string index $text 0] == ":"} {
-		set pos [string first " " $text]
-		set vec [list [string range $text 0 [expr $pos-1]]]
-	}
-	set pos [string first " :" $text]
-	if {$pos < 0} {
-		set vec [split $text " "]
+		set vec [list [string range $text 1 end]]
 	} else {
-		set vec [split [string range $text 0 [expr $pos-1]] " "]
-		lappend vec [string range $text [expr $pos+2] end]
+		set pos [string first " :" $text]
+		if {$pos < 0} {
+			set vec [split $text " "]
+		} else {
+			set vec [split [string range $text 0 [expr $pos-1]] " "]
+			lappend vec [string range $text [expr $pos+2] end]
+		}
 	}
 	return $vec
 }
