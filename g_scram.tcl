@@ -79,8 +79,9 @@ proc scram:step {step data algo} {
 
 	if {$step == 1 && $data == "+"} {
 		set cGs2Header "n,,"
+		# Authorization ID can be sent as GS2 header attribute (*not* SCRAM initMsg):
+		# set cGs2Header "n,a=[scram:escape ${sasl-authz-id}],"
 		set cNonce [scram:mknonce 32]
-		# optional: a=${sasl-authzid}
 		set cInitMsg "n=[scram:escape ${sasl-user}],r=${cNonce}"
 		array unset scram-state *
 		set scram-state(cGs2Header) $cGs2Header
