@@ -157,8 +157,8 @@ proc scram:step {step data algo} {
 			set clientKey [$mfunc -bin -key $saltedPassword -- "Client Key"]
 			set serverKey [$mfunc -bin -key $saltedPassword -- "Server Key"]
 			# Cache the value for subsequent reconnections
-			#set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},H=[b64:encode $saltedPassword]"
-			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
+			set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},H=[b64:encode $saltedPassword]"
+			#set sasl-pass "scram:a=$algo,s=${sKvps(s)},i=${sKvps(i)},C=[b64:encode $clientKey],S=[b64:encode $serverKey]"
 			scram:upgrade-config ${sasl-pass}
 		}
 		set cGs2Header ${scram-state(cGs2Header)}
