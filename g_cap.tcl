@@ -177,6 +177,15 @@ proc sasl:init-compat-vars {} {
 	if {[info exists sasl-use-mechs]} {
 		set sasl-mechanism ${sasl-use-mechs}
 	}
+	# forward-compatibility with Eggdrop 1.9 settings
+	switch ${sasl-mechanism} {
+		0 { set sasl-mechanism PLAIN }
+		1 { set sasl-mechanism ECDSA-NIST256P-CHALLENGE }
+		2 { set sasl-mechanism EXTERNAL }
+	}
+	if {[info exists "sasl-continue"]} {
+		set sasl-disconnect-on-fail [expr !${sasl-continue}]
+	}
 }
 
 proc sasl:get-first-mech {} {
