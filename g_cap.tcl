@@ -183,6 +183,12 @@ proc sasl:init-compat-vars {} {
 		1 { set sasl-mechanism ECDSA-NIST256P-CHALLENGE }
 		2 { set sasl-mechanism EXTERNAL }
 	}
+	if {[info exists "sasl-username"]} {
+		set sasl-user ${sasl-username}
+	}
+	if {[info exists "sasl-password"]} {
+		set sasl-pass ${sasl-password}
+	}
 	if {[info exists "sasl-continue"]} {
 		set sasl-disconnect-on-fail [expr !${sasl-continue}]
 	}
